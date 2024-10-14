@@ -1,0 +1,69 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.4'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'kr'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+jar{enabled = true}
+bootJar{
+    enabled = true
+}
+
+repositories {
+    mavenCentral()
+}
+ext{
+    set('springCloudVersion', "2023.0.2")
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+dependencies {
+    // Spring WebFlux만 사용
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // MongoDB Reactive 사용
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // QueryDSL 의존성
+    implementation group: 'com.querydsl', name: 'querydsl-codegen', version: '5.1.0'
+
+    // AWS S3 클라이언트
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.300'
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+
+    // JSON 파싱 라이브러리
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+
+    // Selenium
+    implementation 'org.seleniumhq.selenium:selenium-java:4.14.0'
+
+    // Jsoup 크롤링 라이브러리
+    implementation 'org.jsoup:jsoup:1.16.1'
+
+    // Spring Cloud Config Server 의존성 추가
+    implementation 'org.springframework.cloud:spring-cloud-config-server'
+
+    // 테스트 관련 의존성
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
