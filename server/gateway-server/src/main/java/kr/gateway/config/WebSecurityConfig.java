@@ -10,8 +10,9 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+
 
 import java.util.Arrays;
 
@@ -31,6 +32,9 @@ public class WebSecurityConfig {
                         .pathMatchers(HttpMethod.OPTIONS).permitAll()
                         .anyExchange().permitAll()
                 )
+                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
+                .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .oauth2Login(oauth2Login -> oauth2Login
                         .clientRegistrationRepository(reactiveClientRegistrationRepository)
                         .authenticationSuccessHandler(serverAuthenticationSuccessHandler)
@@ -52,4 +56,3 @@ public class WebSecurityConfig {
         return source;
     }
 }
-
