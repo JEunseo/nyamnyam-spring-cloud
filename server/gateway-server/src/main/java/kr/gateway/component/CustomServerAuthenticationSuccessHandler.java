@@ -22,16 +22,19 @@ public class CustomServerAuthenticationSuccessHandler implements ServerAuthentic
     @Override
     public Mono<Void> onAuthenticationSuccess(WebFilterExchange exchange, Authentication authentication) {
         String requestPath = exchange.getExchange().getRequest().getPath().toString();
-        log.info("WebFilterExchange 정보 :"+exchange);
-        log.info("Authentication 정보:"+authentication);
+        log.info("WebFilterExchange 정보 :" + exchange);
+        log.info("Authentication 정보:" + authentication);
         log.info("Authorities 정보:" + authentication.getAuthorities());
         log.info("Credentials 정보:" + authentication.getCredentials());
 
-        if (requestPath.startsWith("/auth/login","/auth/oauth2")) {
-            // OAuth2 로그인 성공 시 리다이렉트
-            return exchange.getExchange().getResponse().setStatusCode(HttpStatus.FOUND);
+        if (requestPath.startsWith("/auth/login")) {
+
+            exchange.getExchange().getResponse().setStatusCode(HttpStatus.FOUND);
             exchange.getExchange().getResponse().getHeaders().setLocation(URI.create("http://localhost:3000"));
             exchange.getExchange().getResponse().getHeaders().add("Content-Type", "application/json");
+
+            // 토큰 생성 부분 주석 처리
+            /*
             exchange.getExchange().getResponse()
                     .writeWith(
                             jwtTokenProvider.generateToken(null, false)
@@ -43,15 +46,22 @@ public class CustomServerAuthenticationSuccessHandler implements ServerAuthentic
                                                     .add("accessToken",
                                                             ResponseCookie.from("accessToken")
                                                                     .path("/")
-                                                                    .maxAge(jwtTokenProvider.getAccessTokenExpired())
-                                                                    .build()))//쿠키 생성 및 설정
-                                    .flatMap(jwtTokenProvider.generateToken(null, true))
-                                    .doOnNext(log.info("Oauth2 Login Success"))
-                                    .flatMap(exchange.getExchange().getResponse().setComplete())
-                                    .flatMap(Mono.empty())
+                                                                    .maxAge(jwtTokenProvider.accessTokenExpiration())
+                                                                    .build()
+                                                    )
+                                    )//쿠키 생성 및 설정
+                                    .flatMap(i -> jwtTokenProvider.generateToken(null, true))
+                                    .doOnNext(signalType -> log.info("Oauth2 Login Success"))
+                                    .flatMap(signalType -> exchange.getExchange().getResponse().setComplete())
+                                    .flatMap(signalType -> Mono.empty())
                     );
+            */
+
+            // 테스트용 단순 응답 반환
+            return exchange.getExchange().getResponse().setComplete();
+
         } else {
-            // 지정된 origin이 아닌 경우
+            // 지정된 url 이 아닌 경우
             return Mono.empty();  // 필터 체인 종료
         }
     }
