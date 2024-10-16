@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -27,8 +28,6 @@ public class AuthController {
                 });
     }
 
-
-    // OAuth2 로그인
     @PostMapping("/oauth2")
     public Mono<ResponseEntity<String>> oauthLogin(@RequestBody OAuth2Request request) {
         return authService.oauthLogin(request)
@@ -36,7 +35,6 @@ public class AuthController {
                 .onErrorResume(e -> Mono.just(ResponseEntity.status(401).body(e.getMessage())));
     }
 
-    // 토큰 갱신
     @PostMapping("/refresh")
     public Mono<ResponseEntity<String>> refreshToken(@RequestBody String oldToken) {
         return authService.refreshToken(oldToken)
@@ -44,11 +42,23 @@ public class AuthController {
                 .onErrorResume(e -> Mono.just(ResponseEntity.status(401).body(e.getMessage())));
     }
 
-    // 로그아웃 처리
     @PostMapping("/logout")
     public Mono<ResponseEntity<Object>> logout(@RequestBody String token) {
         return authService.logout(token)
                 .thenReturn(ResponseEntity.noContent().build())
                 .onErrorResume(e -> Mono.just(ResponseEntity.status(401).build()));
     }
+
+    @GetMapping("/oauth2/code/naver")
+    public Mono<ResponseEntity<String>> handleNaverCallback(@RequestParam String code,
+                                                            @RequestParam String state,
+                                                            ServerWebExchange exchange) {
+        return authService.handleNaverCallback(code, state, exchange);
+    }
+
+    @GetMapping("/oauth2/authorization/naver")
+    public Mono<ResponseEntity<Void>> redirectToNaverLogin(ServerWebExchange exchange) {
+        return authService.redirectToNaverLogin(exchange);
+    }
+
 }
