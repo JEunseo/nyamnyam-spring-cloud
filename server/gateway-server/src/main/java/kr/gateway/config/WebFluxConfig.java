@@ -13,4 +13,5 @@ public class WebFluxConfig implements WebFluxConfigurer {
     public void addFormatters(FormatterRegistry registry) {
 
     }
+
 }

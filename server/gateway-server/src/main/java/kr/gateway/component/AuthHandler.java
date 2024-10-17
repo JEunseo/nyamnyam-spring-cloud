@@ -32,6 +32,7 @@ public class AuthHandler {
     private final JwtTokenProvider jwtTokenProvider;
     private final WebClient webClient = WebClient.create();
 
+
     public Mono<ServerResponse> login(ServerRequest request) {
         return request.bodyToMono(LoginRequest.class)
                 .flatMap(req -> {
@@ -49,7 +50,13 @@ public class AuthHandler {
 
                     // JWT 생성
                     return jwtTokenProvider.generateToken(userDetails, false)
-                            .flatMap(jwt -> ServerResponse.ok().bodyValue("Login successful. JWT: " + jwt));
+                            .flatMap(jwt -> {
+                                // 생성된 JWT를 로그로 출력 (터미널에 표시됨)
+                                System.out.println("Generated JWT: "+ jwt);
+
+                                // 클라이언트에게 응답 반환
+                                return ServerResponse.ok().bodyValue("Login successful. JWT: " + jwt);
+                            });
                 })
                 .onErrorResume(e -> ServerResponse.status(HttpStatus.UNAUTHORIZED).bodyValue("Error: " + e.getMessage()));
     }
