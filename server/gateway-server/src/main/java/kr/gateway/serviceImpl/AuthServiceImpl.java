@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 //package kr.gateway.serviceImpl;
+=======
+package kr.gateway.serviceImpl;//package kr.gateway.serviceImpl;
+>>>>>>> 80cca43033e3ec9ef9c5917c91a2b4fe57bf4ee7
 //
 //import kr.gateway.component.JwtTokenProvider;
 //import kr.gateway.document.LoginRequest;

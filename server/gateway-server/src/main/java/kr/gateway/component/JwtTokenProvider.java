@@ -12,7 +12,10 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 
+<<<<<<< HEAD
 import javax.crypto.SecretKey;
+=======
+>>>>>>> 80cca43033e3ec9ef9c5917c91a2b4fe57bf4ee7
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
@@ -39,7 +42,11 @@ public class JwtTokenProvider {
         Key key = Keys.hmacShaKeyFor(keyBytes);
 
         String token = Jwts.builder()
+<<<<<<< HEAD
                 .setSubject(userDetails.getUsername())
+=======
+                .setSubject(userDetails.getUsername())  // UserDetails에서 username 추출 (혹은 userId를 따로 관리할 수 있음)
+>>>>>>> 80cca43033e3ec9ef9c5917c91a2b4fe57bf4ee7
                 .setIssuedAt(now)
                 .setExpiration(expiration)
                 .signWith(key)
@@ -55,12 +62,21 @@ public class JwtTokenProvider {
     public Mono<Boolean> validateToken(String token) {
         try {
             byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
+<<<<<<< HEAD
             SecretKey key = Keys.hmacShaKeyFor(keyBytes);
 
             Jwts.parser()
                     .verifyWith(key)
                     .build()
                     .parseSignedClaims(token);
+=======
+            Key key = Keys.hmacShaKeyFor(keyBytes);
+
+            Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token);
+>>>>>>> 80cca43033e3ec9ef9c5917c91a2b4fe57bf4ee7
             return Mono.just(true);
         } catch (ExpiredJwtException e) {
             // 만료된 토큰 처리
@@ -78,6 +94,7 @@ public class JwtTokenProvider {
     }
 
 
+<<<<<<< HEAD
 
 //    public String getUserIdFromToken(String token) {
 //        byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
@@ -91,6 +108,31 @@ public class JwtTokenProvider {
 //
 //        return claims.getSubject();  // subject에 userId 혹은 username 저장
 //    }
+=======
+
+    public String getUserIdFromToken(String token) {
+        byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
+        Key key = Keys.hmacShaKeyFor(keyBytes);
+
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)  // 서명 검증을 위한 key 설정
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.getSubject();  // subject에 userId 혹은 username 저장
+    }
+
+    public Mono<String> refreshToken(String oldToken) {
+        if (!validateToken(oldToken).block()) {
+            return Mono.error(new RuntimeException("Invalid token"));
+        }
+
+        String userId = getUserIdFromToken(oldToken);
+        UserDetails userDetails = loadUserByUsername(userId);  // UserDetails를 가져오는 로직 필요
+        return generateToken(userDetails, true);  // 리프레시 토큰 생성
+    }
+>>>>>>> 80cca43033e3ec9ef9c5917c91a2b4fe57bf4ee7
 
 //    public Mono<String> refreshToken(String oldToken) {
 //        if (!validateToken(oldToken).block()) {
@@ -102,6 +144,7 @@ public class JwtTokenProvider {
 //        return generateToken(userDetails, true);  // 리프레시 토큰 생성
 //    }
 
+<<<<<<< HEAD
 //    public Mono<Void> invalidateToken(String token) {
 //        return Mono.empty();
 //    }
@@ -114,4 +157,14 @@ public class JwtTokenProvider {
 //                .getBody();
 //        return claims.get("objectId", String.class); // objectId 추출
 //    }
+=======
+    public String getObjectIdFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(secret.getBytes(StandardCharsets.UTF_8))
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get("objectId", String.class); // objectId 추출
+    }
+>>>>>>> 80cca43033e3ec9ef9c5917c91a2b4fe57bf4ee7
 }

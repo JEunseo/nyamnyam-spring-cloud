@@ -17,7 +17,11 @@ public class AuthRouter {
     @Bean
     public RouterFunction<ServerResponse> authRoutes() {
         return RouterFunctions.route()
+<<<<<<< HEAD
                 .POST("/auth/login", authHandler::login)
+=======
+//                .POST("/auth/login", authHandler::login)
+>>>>>>> 80cca43033e3ec9ef9c5917c91a2b4fe57bf4ee7
 //                .POST("/auth/refresh", authHandler::refreshToken)
 //                .POST("/auth/logout", authHandler::logout)
                 .GET("/auth/oauth2/code/naver", authHandler::handleNaverCallback)
