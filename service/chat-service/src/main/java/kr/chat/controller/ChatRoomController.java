@@ -6,13 +6,10 @@ import kr.chat.document.ChatRoom;
 import kr.chat.service.ChatRoomService;
 import kr.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-//Post, Put Delete  Get
 
 @RestController
 @RequiredArgsConstructor
@@ -25,8 +22,7 @@ public class ChatRoomController {
 
     @PostMapping("/save")
     public Mono<ChatRoom> save(@RequestBody ChatRoom chatRoom) {
-        return chatRoomService.save(chatRoom)
-                .switchIfEmpty(Mono.error(new BadRequestException("Failed to save chat room"))); // 저장 실패 시 예외 처리
+        return chatRoomService.save(chatRoom);
     }
 
 

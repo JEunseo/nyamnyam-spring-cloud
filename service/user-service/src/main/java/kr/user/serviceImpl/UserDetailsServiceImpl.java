@@ -1,4 +1,4 @@
-package kr.gateway.serviceImpl;//package kr.nyamnyam.service.impl;
+package kr.user.serviceImpl;//package kr.nyamnyam.service.impl;
 //
 //import kr.nyamnyam.model.entity.UserEntity;
 //import kr.nyamnyam.service.UserService;

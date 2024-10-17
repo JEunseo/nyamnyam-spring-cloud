@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 //package kr.gateway.config;
-=======
-package kr.gateway.config;//package kr.gateway.config;
->>>>>>> 80cca43033e3ec9ef9c5917c91a2b4fe57bf4ee7
 //
 //import com.amazonaws.auth.AWSStaticCredentialsProvider;
 //import com.amazonaws.auth.BasicAWSCredentials;

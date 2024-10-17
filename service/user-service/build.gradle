@@ -13,10 +13,13 @@ java {
     }
 }
 
-jar{enabled = true}
-bootJar{
+jar {
+    enabled = false
+}
+bootJar {
     enabled = true
 }
+
 
 repositories {
     mavenCentral()
@@ -33,18 +36,22 @@ dependencyManagement {
 }
 
 dependencies {
-    // Spring WebFlux만 사용
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
-
-    // MongoDB Reactive 사용
+    // Spring Boot 스타터
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
-
-    // Lombok
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.cloud:spring-cloud-starter-config'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
     // QueryDSL 의존성
     implementation group: 'com.querydsl', name: 'querydsl-codegen', version: '5.1.0'
+
+    // Lombok (컴파일 타임 의존성)
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // Spring Boot DevTools
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     // 테스트 관련 의존성
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -66,7 +73,7 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-    // AWS S3 클라이언트
+    // AWS SDK S3
     implementation 'com.amazonaws:aws-java-sdk-s3:1.12.300'
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
 
@@ -78,10 +85,6 @@ dependencies {
 
     // Spring Security
     implementation 'org.springframework.boot:spring-boot-starter-security'
-
-    // Eureka Client
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-
 }
 
 tasks.named('test') {

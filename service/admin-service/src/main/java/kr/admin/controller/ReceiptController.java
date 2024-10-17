@@ -121,7 +121,7 @@ public class ReceiptController {
         return ResponseEntity.ok(receiptService.save(receipt));
     }
 
-    @GetMapping("show")
+    @GetMapping("/show")
     public ResponseEntity<ReceiptEntity> show(@RequestBody ReceiptEntity receipt) {
         return ResponseEntity.ok(receiptService.show(receipt));
     }

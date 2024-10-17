@@ -6,7 +6,6 @@ import kr.post.absent.Pagination;
 import kr.post.absent.Chart.UserPostModel;
 import kr.post.component.ImageModel;
 import kr.post.component.PostModel;
-import kr.post.controller.PostController;
 import kr.post.entity.*;
 import kr.post.repository.PostRepository;
 import kr.post.repository.PostTagRepository;
@@ -14,9 +13,15 @@ import kr.post.repository.RestaurantRepository;
 import kr.post.repository.TagRepository;
 import kr.post.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -84,6 +89,46 @@ public class PostServiceImpl implements PostService {
                 .limit(p.getEndRow() - p.getStartRow() + 1)
                 .map(this::convertToModel)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    public Boolean crawling() {
+        String url = "http://www.cgv.co.kr/movies/";
+        Document doc = null;
+        List<PostEntity> posts = new ArrayList<>();
+
+        try {
+            doc = Jsoup.connect(url).timeout(5000).get();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (doc == null) {
+            System.out.println("문서를 로드할 수 없습니다.");
+        }
+
+        Elements elements = doc.select("div.sect-movie-chart");
+        Iterator<Element> rank = elements.select("strong.rank").iterator();
+        Iterator<Element> title = elements.select("strong.title").iterator();
+
+        while (rank.hasNext() && title.hasNext()) {
+            String movieRank = rank.next().text().replaceAll("[^0-9]", "");
+            String movieTitle = title.next().text();
+            System.out.println(movieRank + ": " + movieTitle);
+
+            PostEntity post = PostEntity.builder()
+                    .content("Rank: " + movieRank + ", Title: " + movieTitle)
+                    .taste(Long.parseLong(movieRank)) // 맛을 순위로 대체, 예시로 사용
+                    .clean(5L) // 예시 값
+                    .service(5L) // 예시 값
+                    .build();
+
+            posts.add(post);
+            repository.saveAll(posts);
+            repository.findAll();
+        }
+        return repository.findAll().isEmpty();
     }
 
     @Override

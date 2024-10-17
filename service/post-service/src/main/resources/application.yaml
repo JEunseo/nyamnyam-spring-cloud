@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: post-service
   profiles:
     active: local
   config:

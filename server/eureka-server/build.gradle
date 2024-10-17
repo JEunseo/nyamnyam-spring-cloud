@@ -12,14 +12,19 @@ java {
         languageVersion = JavaLanguageVersion.of(17)
     }
 }
-jar{enabled = true}
-bootJar{
+
+jar {
+    enabled = false
+}
+bootJar {
     enabled = true
 }
+
 
 repositories {
     mavenCentral()
 }
+
 ext{
     set('springCloudVersion', "2023.0.2")
 }
@@ -31,10 +36,10 @@ dependencyManagement {
 }
 
 dependencies {
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-eureka-server', version: '4.1.3'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-config', version: '4.1.3'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {

@@ -1,21 +1,15 @@
 package kr.gateway.component;
 
 import kr.gateway.component.JwtTokenProvider;
-<<<<<<< HEAD
 import kr.gateway.config.UserDetailsImpl;
-=======
->>>>>>> 80cca43033e3ec9ef9c5917c91a2b4fe57bf4ee7
 import kr.gateway.document.LoginRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-<<<<<<< HEAD
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-=======
->>>>>>> 80cca43033e3ec9ef9c5917c91a2b4fe57bf4ee7
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -26,11 +20,8 @@ import reactor.core.publisher.Mono;
 import org.springframework.core.ParameterizedTypeReference;
 
 import java.net.URI;
-<<<<<<< HEAD
 import java.util.Collections;
 import java.util.List;
-=======
->>>>>>> 80cca43033e3ec9ef9c5917c91a2b4fe57bf4ee7
 import java.util.Map;
 import java.util.UUID;
 
@@ -40,8 +31,6 @@ public class AuthHandler {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final WebClient webClient = WebClient.create();
-
-<<<<<<< HEAD
 
     public Mono<ServerResponse> login(ServerRequest request) {
         return request.bodyToMono(LoginRequest.class)
@@ -60,13 +49,7 @@ public class AuthHandler {
 
                     // JWT 생성
                     return jwtTokenProvider.generateToken(userDetails, false)
-                            .flatMap(jwt -> {
-                                // 생성된 JWT를 로그로 출력 (터미널에 표시됨)
-                                System.out.println("Generated JWT: "+ jwt);
-
-                                // 클라이언트에게 응답 반환
-                                return ServerResponse.ok().bodyValue("Login successful. JWT: " + jwt);
-                            });
+                            .flatMap(jwt -> ServerResponse.ok().bodyValue("Login successful. JWT: " + jwt));
                 })
                 .onErrorResume(e -> ServerResponse.status(HttpStatus.UNAUTHORIZED).bodyValue("Error: " + e.getMessage()));
     }
@@ -75,15 +58,6 @@ public class AuthHandler {
 
 
 
-=======
-//    // 1. 로그인 처리
-//    public Mono<ServerResponse> login(ServerRequest request) {
-//        return request.bodyToMono(LoginRequest.class)
-//                .flatMap(req -> jwtTokenProvider.generateToken()
-//                .flatMap(jwt -> ServerResponse.ok().bodyValue("Login successful. JWT: " + jwt))
-//                .onErrorResume(e -> ServerResponse.status(HttpStatus.UNAUTHORIZED).bodyValue(e.getMessage()));
-//    }
->>>>>>> 80cca43033e3ec9ef9c5917c91a2b4fe57bf4ee7
 //
 //    // 2. 토큰 갱신 처리
 //    public Mono<ServerResponse> refreshToken(ServerRequest request) {
@@ -131,7 +105,6 @@ public class AuthHandler {
         String state = request.queryParam("state").orElse("");
 
         return exchangeCodeForToken(code, state)
-<<<<<<< HEAD
                 .flatMap(this::requestUserInfo)
                 .flatMap(naverUserInfo -> {
                     String naverUserId = (String) naverUserInfo.get("id");
@@ -143,22 +116,10 @@ public class AuthHandler {
                     return issueJwtToken(naverUserInfo)
                             .flatMap(jwt -> ServerResponse.ok().bodyValue("Login successful. JWT: " + jwt))
                             .doOnSuccess(res -> registerUser.subscribe()); // 비동기 회원가입 처리 실행
-=======
-                .flatMap(tokenResponse -> {
-                    String accessToken = (String) tokenResponse.get("access_token");
-                    System.out.println("Access Token: " + accessToken);
-
-                    return requestUserInfo(tokenResponse);
-                })
-                .flatMap(userInfo -> {
-                    System.out.println("User Info: " + userInfo);
-                    return ServerResponse.ok().bodyValue(userInfo);
->>>>>>> 80cca43033e3ec9ef9c5917c91a2b4fe57bf4ee7
                 })
                 .onErrorResume(e -> ServerResponse.status(HttpStatus.UNAUTHORIZED).bodyValue("Error: " + e.getMessage()));
     }
 
-<<<<<<< HEAD
     // user-service로 네이버 사용자 조회
     private Mono<User> checkUserInUserService(String naverUserId) {
         return webClient.get()
@@ -198,8 +159,6 @@ public class AuthHandler {
         return jwtTokenProvider.generateToken(userDetails, false);
     }
 
-=======
->>>>>>> 80cca43033e3ec9ef9c5917c91a2b4fe57bf4ee7
 
 
     // 네이버로 Access Token 요청

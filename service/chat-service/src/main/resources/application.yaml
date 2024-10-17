@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: chat-service
   profiles:
     active: local
   config:

@@ -1,10 +1,10 @@
-package kr.post;
+package kr.postservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class PostApplicationTests {
+class PostServiceApplicationTests {
 
     @Test
     void contextLoads() {

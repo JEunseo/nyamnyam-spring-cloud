@@ -1,7 +1,0 @@
-[submodule "server/config-server"]
-    path = server/config-server
-    url = https://github.com/JEunseo/config-server.git
-
-[submodule "server/secret-server"]
-    path = server/secret-server
-    url = https://github.com/JEunseo/secret-server.git

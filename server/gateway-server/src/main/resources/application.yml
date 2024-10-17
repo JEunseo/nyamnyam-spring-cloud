@@ -14,7 +14,7 @@ spring:
       on-profile: default
 
   application:
-    name: gateway
+    name: api
 
   main:
     allow-bean-definition-overriding: true

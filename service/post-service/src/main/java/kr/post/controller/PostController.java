@@ -8,12 +8,14 @@ import kr.post.service.ImageService;
 import kr.post.service.PostService;
 import kr.post.service.UpvoteService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin
@@ -47,6 +49,11 @@ public class PostController {
     @GetMapping("/{postId}/like-count")
     public ResponseEntity<Integer> getLikeCount(@PathVariable Long postId) {
         return ResponseEntity.ok(upvoteService.getLikeCount(postId));
+    }
+
+    @GetMapping("/crawling")
+    public ResponseEntity<Boolean> crawl() {
+        return ResponseEntity.ok(service.crawling());
     }
 
     @GetMapping("/group/{page}")

@@ -1,10 +1,10 @@
-package kr.restaurant;
+package kr.eurekaserver;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class RestaurantApplicationTests {
+class EurekaServerApplicationTests {
 
     @Test
     void contextLoads() {

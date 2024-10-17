@@ -51,8 +51,7 @@ dependencies {
     // spring doc
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webflux-ui', version: '2.6.0'
     // config
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-config', version: '4.1.3'
-
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-config', version: '4.1.3'
     // mongo
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
     // lombok

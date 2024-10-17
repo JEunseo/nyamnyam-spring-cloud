@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 //package kr.gateway.config;
-=======
-package kr.gateway.component;//package kr.gateway.config;
->>>>>>> 80cca43033e3ec9ef9c5917c91a2b4fe57bf4ee7
 //
 //import kr.gateway.service.AuthService; // 새롭게 AuthService로 통합
 //import lombok.RequiredArgsConstructor;
