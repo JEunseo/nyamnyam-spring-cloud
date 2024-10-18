@@ -1,10 +1,13 @@
 package kr.gateway;
 
+import kr.gateway.config.AuthRouter;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import reactor.core.publisher.Mono;
 
@@ -36,6 +39,17 @@ public class GatewayApplication {
             }, error -> {
                 System.out.println("MongoDB 연결에 실패했습니다: " + error.getMessage());
             });
+        };
+    }
+
+    @Bean
+    public CommandLineRunner checkAuthRoutes(ApplicationContext ctx) {
+        return args -> {
+            if (ctx.containsBean("authRoutes")) {
+                System.out.println("=== AuthRoutes Bean이 성공적으로 등록되었습니다! ===");
+            } else {
+                System.out.println("=== AuthRoutes Bean이 등록되지 않았습니다. ===");
+            }
         };
     }
 

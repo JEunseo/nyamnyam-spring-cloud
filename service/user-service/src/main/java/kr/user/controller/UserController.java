@@ -10,6 +10,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -54,16 +55,15 @@ public class UserController {
         return userService.save(user, thumbnails     != null ? thumbnails : Collections.emptyList());
     }
 
-
-    @PostMapping("/login")
-    public Mono<String> login(@RequestParam String username, @RequestParam String password) {
-        return userService.authenticate(username, password);
-    }
-
     @GetMapping("/check-username")
     public Mono<Boolean> checkUsername(@RequestParam String username) {
         return userService.findByUsername(username)
                 .hasElement();
+    }
+
+    @PostMapping("/register-naver-user")
+    public Mono<User> registerNaverUser(@RequestBody Map<String, Object> naverUserInfo) {
+        return userService.registerNaverUser(naverUserInfo);
     }
 
 }

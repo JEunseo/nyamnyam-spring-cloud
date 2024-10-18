@@ -35,7 +35,7 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '3.3.4'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: '3.3.4'
     // spring webflux
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux', version: '3.3.4'
+    //implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux', version: '3.3.4'
     // spring cloud
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-gateway', version: '4.0.0'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-circuitbreaker-reactor-resilience4j', version: '3.1.2'
