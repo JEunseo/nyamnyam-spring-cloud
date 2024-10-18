@@ -8,9 +8,3 @@ spring:
   config:
     import: optional:configserver:http://localhost:8888
 
-logging:
-  level:
-    org.springframework.cloud.gateway: DEBUG
-    reactor.netty: DEBUG
-    org.springframework.web.reactive: TRACE
-
