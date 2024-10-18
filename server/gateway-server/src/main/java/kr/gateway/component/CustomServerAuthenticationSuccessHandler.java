@@ -27,7 +27,7 @@ public class CustomServerAuthenticationSuccessHandler implements ServerAuthentic
 //        log.info("Authorities 정보:" + authentication.getAuthorities());
 //        log.info("Credentials 정보:" + authentication.getCredentials());
 //
-//        if (requestPath.startsWith("/auth/Oauth")) {
+//        if (requestPath.startsWith("/auth/login")) {
 //
 //            exchange.getExchange().getResponse().setStatusCode(HttpStatus.FOUND);
 //            exchange.getExchange().getResponse().getHeaders().setLocation(URI.create("http://localhost:3000"));
@@ -58,7 +58,7 @@ public class CustomServerAuthenticationSuccessHandler implements ServerAuthentic
 //            */
 //
 //            // 테스트용 단순 응답 반환
-        return exchange.getExchange().getResponse().setComplete();
+            return exchange.getExchange().getResponse().setComplete();
 
 //        } else {
 //            // 지정된 url 이 아닌 경우
@@ -66,3 +66,5 @@ public class CustomServerAuthenticationSuccessHandler implements ServerAuthentic
 //        }
     }
 }
+
+
