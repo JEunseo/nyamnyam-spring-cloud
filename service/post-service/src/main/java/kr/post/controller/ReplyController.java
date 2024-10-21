@@ -20,26 +20,6 @@ public class ReplyController {
         return ResponseEntity.ok(service.findAllByPostId(postId));
     }
 
-    @GetMapping("/group")
-    public ResponseEntity<List<ReplyModel>> findAll() {
-        return ResponseEntity.ok(service.findAll());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ReplyModel> getReplyById(@PathVariable Long id) {
-        return ResponseEntity.ok(service.findById(id));
-    }
-
-    @GetMapping("/exist/{id}")
-    public ResponseEntity<Boolean> existsById(@PathVariable Long id) {
-        return ResponseEntity.ok(service.existsById(id));
-    }
-
-    @GetMapping("/count")
-    public ResponseEntity<Long> count() {
-        return ResponseEntity.ok(service.count());
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> deleteById(@PathVariable Long id) {
         return ResponseEntity.ok(service.deleteById(id));

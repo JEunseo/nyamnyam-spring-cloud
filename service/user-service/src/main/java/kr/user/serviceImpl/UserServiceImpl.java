@@ -12,7 +12,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
@@ -38,8 +37,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Flux<User> findAll() {
-        return userRepository.findAll();
+        System.out.println("findAll() method called - fetching all users from the database");
+
+        return userRepository.findAll()
+                .doOnNext(user -> System.out.println("Fetched user: " + user))
+                .doOnError(error -> System.out.println("Error occurred while fetching users: " + error));
     }
+
 
     @Override
     public Mono<Long> count() {
@@ -106,36 +110,15 @@ public class UserServiceImpl implements UserService {
                 );
     }
 
-    public Mono<User> registerNaverUser(Map<String, Object> naverUserInfo) {
-        String naverUserId = (String) naverUserInfo.get("id");
 
-        return userRepository.findByNaverUserId(naverUserId)
-                .switchIfEmpty(Mono.defer(() -> {
-                    // 네이버 사용자 정보로 User 객체 생성
-                    User newUser = User.builder()
-                            .naverUserId(naverUserId)
-                            .username((String) naverUserInfo.get("nickname"))  // 네이버의 닉네임 사용
-                            .name((String) naverUserInfo.get("name"))          // 네이버의 이름 사용
-                            .gender((String) naverUserInfo.get("gender"))      // 성별 정보 추가
-                            .tel((String) naverUserInfo.get("mobile_e164"))    // 국제 전화 형식 사용
-                            .age(parseAge((String) naverUserInfo.get("age")))  // 나이 계산 (예: "30-39" -> 35)
-                            .role("USER")                                      // 기본 역할 설정
-                            .enabled(true)                                     // 활성화 설정
-                            .build();
 
-                    // 새로운 유저를 DB에 저장
-                    return userRepository.save(newUser); // Mono<User> 반환
-                }));
+
+    @Override
+    public Mono<String> authenticate(String username, String password) {
+        return null;
+//        return userRepository.findByUsername(username)
+//                .filter(user -> new BCryptPasswordEncoder().matches(password, user.getPassword()))
+////                .flatMap(user -> tokenService.createAndSaveToken(user.getId()));
     }
-
-    // 네이버에서 받은 나이 정보 ("30-39")를 숫자로 변환하는 함수
-    private Long parseAge(String ageRange) {
-        if (ageRange == null || !ageRange.contains("-")) {
-            return null;
-        }
-        String[] parts = ageRange.split("-");
-        return (Long.parseLong(parts[0]) + Long.parseLong(parts[1])) / 2;  // 평균값으로 나이 계산
-    }
-
-
 }
+

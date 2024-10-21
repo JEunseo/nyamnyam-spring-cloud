@@ -41,13 +41,8 @@ public class TagController {
         return ResponseEntity.ok(service.findByName(name));
     }
 
-    @GetMapping("/exists/{name}")
-    public ResponseEntity<Boolean> existsByName(@PathVariable String name) {
-        return ResponseEntity.ok(service.existsByName(name));
-    }
-
     @DeleteMapping("/{name}")
-    public ResponseEntity<Boolean> deleteByName(@PathVariable String name) {
+    public ResponseEntity<Boolean> delete(@PathVariable String name) {
         return ResponseEntity.ok(service.deleteByName(name));
     }
 

@@ -51,16 +51,6 @@ public class PostController {
         return ResponseEntity.ok(upvoteService.getLikeCount(postId));
     }
 
-    @GetMapping("/crawling")
-    public ResponseEntity<Boolean> crawl() {
-        return ResponseEntity.ok(service.crawling());
-    }
-
-    @GetMapping("/group/{page}")
-    public ResponseEntity<List<PostModel>> getPostPage(@PathVariable int page) {
-        return ResponseEntity.ok(service.findAllPerPage(page));
-    }
-
     @GetMapping("/{restaurantId}/group")
     public ResponseEntity<List<PostModel>> getListByRestaurant(@PathVariable Long restaurantId) {
         return ResponseEntity.ok(service.findAllByRestaurant(restaurantId));
@@ -70,16 +60,6 @@ public class PostController {
     public ResponseEntity<PostModel> getPostId(@PathVariable Long id) {
         PostModel postModel = service.postWithImage(id);
         return ResponseEntity.ok(postModel);
-    }
-
-    @GetMapping("/exist/{id}")
-    public ResponseEntity<Boolean> existsPostById(@PathVariable Long id) {
-        return ResponseEntity.ok(service.existsById(id));
-    }
-
-    @GetMapping("/count")
-    public ResponseEntity<Long> countPost() {
-        return ResponseEntity.ok(service.count());
     }
 
     @DeleteMapping("/{id}")
