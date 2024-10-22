@@ -28,6 +28,17 @@ pipeline {
             }
         }
 
+        // 프로젝트 빌드 단계 추가
+                stage('Build Project') {
+                    steps {
+                        script {
+                            dir('server/config-server') {
+                                sh './gradlew build'  // Gradle 빌드를 수행
+                            }
+                        }
+                    }
+                }
+
         stage('Docker Build & Push') {
             steps {
                 script {
