@@ -9,22 +9,18 @@ pipeline {
     stages {
         stage('Checkout SCM') {
             steps {
-                script {
-                    dir('nyamnyam.kr') {
-                        checkout scm
-                    }
-                }
+                checkout scm
             }
         }
 
         stage('Git Clone') {
             steps {
                 script {
-                    dir('nyamnyam.kr/server/config-server') {
+                    dir('server/config-server') {
                         git branch: 'main', url: 'https://github.com/JEunseo/nyamnyam-config-server.git', credentialsId: 'github_personal_access_token'
                     }
 
-                    dir ('nyamnyam.kr/server/config-server/src/main/resources/secret-server') {
+                    dir ('server/config-server/src/main/resources/secret-server') {
                         git branch: 'main', url: 'https://github.com/JEunseo/nyamnyam-secret-server.git', credentialsId: 'github_personal_access_token'
 
                     }
@@ -35,7 +31,7 @@ pipeline {
         stage('Docker Build & Push') {
             steps {
                 script {
-                    dir('nyamnyam.kr') {
+                    dir('server/config-server') {
                         sh 'pwd'
                         // Docker 빌드 및 푸시 명령어 추가
                         sh "docker build -t ${DOCKER_IMAGE_PREFIX}/config-server:latest server/config-server"
