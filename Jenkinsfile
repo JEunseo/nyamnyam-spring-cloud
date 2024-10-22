@@ -47,7 +47,7 @@ pipeline {
         }
         stage('Docker Image Build'){
             steps {
-                sh "cd server/config-server && docker build -t JEunseo/nyam-config-server:latest ."
+                sh "cd server/config-server && docker build -t jeunseo/nyamnyam-config-server:latest ."
                 sh "docker-compose up --build -d"
             }
         }
