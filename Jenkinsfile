@@ -2,72 +2,51 @@ pipeline {
     agent any
 
     environment {
-        PUSH_VERSION = "1.0"
         DOCKER_CREDENTIALS_ID = 'jeunseo'
-        DOCKER_IMAGE_PREFIX = 'jeunseo/nyamnyam'
-        services = "config-server,eureka-server,gateway-server,admin-service,chat-service,post-service,restaurant-service,user-service"
+        DOCKER_IMAGE_PREFIX = 'jeunseo/nyamnyam-config-server'
+        services = "server/config-server,server/eureka-server,server/gateway-server,service/admin-service,service/chat-service,service/post-service,service/restaurant-service,service/user-service"
     }
 
     stages {
-        // GitHub에서 소스 코드 클론
+        stage('Checkout SCM') {
+            steps {
+                checkout scm
+            }
+        }
+
         stage('Git Clone') {
             steps {
-                git branch: 'main', credentialsId: 'github_personal_access_token', url: 'https://github.com/JEunseo/nyamnyam-spring-cloud.git'
-            }
-        }
-
-        // Gradlew 실행 권한 부여 및 빌드
-        stage("Java Build") {
-            steps {
                 script {
-                    sh "chmod +x ./gradlew"  // gradlew에 실행 권한 부여
-                    env.services.split(',').each { service ->  // env.services로 접근해야 함
-                        sh "./gradlew clean build -p server/${service} --warning-mode all"  // 각 서비스 빌드
+                    dir('server/config-server') {
+                        git branch: 'main', url: 'https://github.com/JEunseo/nyamnyam-config-server.git', credentialsId: 'github_personal_access_token'
+                    }
+
+                    dir ('server/config-server/src/main/resources/secret-server') {
+                        git branch: 'main', url: 'https://github.com/JEunseo/nyamnyam-secret-server.git', credentialsId: 'github_personal_access_token'
                     }
                 }
             }
         }
 
-        // Docker 이미지 제거 (옵션, 필요시 사용)
-        stage("Docker Image Remove") {
+        stage('Build JAR') {
             steps {
                 script {
-                    env.services.split(',').each { service ->  // env.services로 접근
-                        sh "docker rmi -f ${DOCKER_IMAGE_PREFIX}/${service}:${PUSH_VERSION}"  // 이전 Docker 이미지 제거
-                    }
-                }
-            }
-        }
+                    sh 'chmod +x gradlew'
 
-        // Docker 이미지 빌드
-        stage("Docker Image Build") {
-            steps {
-                script {
-                    env.services.split(',').each { service ->  // env.services로 접근
-                        sh "docker build -t ${DOCKER_IMAGE_PREFIX}/${service}:${PUSH_VERSION} ."  // Docker 이미지 빌드
-                    }
-                }
-            }
-        }
+                    // services 환경 변수를 Groovy 리스트로 변환
+                    def servicesList = env.services.split(',')
 
-        // Docker 이미지 푸시
-        stage("Docker Push") {
-            steps {
-                script {
-                    env.services.split(',').each { service ->  // env.services로 접근
-                        sh "docker push ${DOCKER_IMAGE_PREFIX}/${service}:${PUSH_VERSION}"  // Docker 이미지 푸시
-                    }
-                }
-            }
-        }
+                    // 각 서비스에 대해 Gradle 빌드 및 테스트 수행
+                    servicesList.each { service ->
+                        dir(service) {
+                            sh "../../gradlew clean build --warning-mode all"
 
-        // Kubernetes 파일 적용
-        stage('Apply Kubernetes files') {
-            steps {
-                withKubeConfig([credentialsId: 'kubeconfig']) {
-                    env.services.split(',').each { service ->  // env.services로 접근
-                        sh "kubectl --kubeconfig=$HOME/.ncloud/kubeconfig.yml apply -f ./k8s/${service}-deployment.yml"  // Kubernetes 배포 적용
-                        sh "kubectl --kubeconfig=$HOME/.ncloud/kubeconfig.yml apply -f ./k8s/${service}-service.yml"  // Kubernetes 서비스 적용
+                            // 테스트 실행 및 실패 시 처리
+                            def testResult = sh(script: "../../gradlew test", returnStatus: true)
+                            if (testResult != 0) {
+                                error "Tests failed for ${service}"
+                            }
+                        }
                     }
                 }
             }
