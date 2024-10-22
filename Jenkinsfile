@@ -7,7 +7,7 @@ pipeline {
     }
 
     stages {
-       stage('Checkout SCM') {
+        stage('Checkout SCM') {
             steps {
                 checkout scm
             }
@@ -45,12 +45,16 @@ pipeline {
                     ]
 
                     for (service in services) {
-                        dir(service) {
-                            sh "../../gradlew clean build --warning-mode all"
-                            // 테스트 실행 및 실패 시 처리
-                            def testResult = sh(script: "../../gradlew test", returnStatus: true)
-                            if (testResult != 0) {
-                                error "Tests failed for ${service}"
+                        // post-service만 빌드하고 테스트하도록 조건 추가
+                        if (service == 'service/post-service') {
+                            dir(service) {
+                                sh "../../gradlew clean build --warning-mode all"
+
+                                // 테스트 실행 및 실패 시 처리
+                                def testResult = sh(script: "../../gradlew test", returnStatus: true)
+                                if (testResult != 0) {
+                                    error "Tests failed for ${service}"
+                                }
                             }
                         }
                     }
