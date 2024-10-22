@@ -3,10 +3,9 @@ pipeline {
 
     environment {
         PUSH_VERSION = "1.0"
-        COMPOSE_TAGNAME = 'nyamnyam'
         DOCKER_CREDENTIALS_ID = 'dockerhub-id'
-        DOCKER_IMAGE_PREFIX = 'jeunseo/nyamnyam-config-server'
-        services = "server/config-server,server/eureka-server,server/gateway-server,service/admin-service,service/chat-service,service/post-service,service/restaurant-service,service/user-service"
+        DOCKER_IMAGE_PREFIX = 'jeunseo/nyamnyam'
+        services = "eureka-server,gateway-server,admin-service,chat-service,post-service,restaurant-service,user-service"
     }
 
     stages {
@@ -48,16 +47,23 @@ pipeline {
             }
         }
 
-        stage("Docker Image Remove") {
+        stage('Docker Config-Server Image Build') {
+            steps {
+                script {
+                    sh "cd server/config-server && docker build -t ${DOCKER_IMAGE_PREFIX}-config-server:${PUSH_VERSION} ."
+                }
+            }
+        }
+
+        stage('Docker Image Remove') {
             steps {
                 script {
                     services.split(',').each { service ->
-                        def imageExists = sh(script: "docker images -q $COMPOSE_TAGNAME/${service}:$PUSH_VERSION", returnStdout: true).trim()
+                        def imageExists = sh(script: "docker images -q ${DOCKER_IMAGE_PREFIX}-${service}:${PUSH_VERSION}", returnStdout: true).trim()
                         if (imageExists) {
-                            sh "docker rmi -f $COMPOSE_TAGNAME/${service}:$PUSH_VERSION"
-                            sh "docker rmi -f $DOCKERHUB_CREDENTIALS_ID/${service}:$PUSH_VERSION"
+                            sh "docker rmi -f ${DOCKER_IMAGE_PREFIX}-${service}:${PUSH_VERSION}"
                         } else {
-                            echo "Image $COMPOSE_TAGNAME/${service}:$PUSH_VERSION not found, skipping..."
+                            echo "Image ${DOCKER_IMAGE_PREFIX}-${service}:${PUSH_VERSION} not found, skipping..."
                         }
                     }
                 }
@@ -66,7 +72,6 @@ pipeline {
 
         stage('Docker Image Build') {
             steps {
-                sh "cd server/config-server && docker build -t jeunseo/nyamnyam-config-server:latest ."
                 sh "docker-compose build"
             }
         }
@@ -74,14 +79,22 @@ pipeline {
         stage('Docker Push') {
             steps {
                 script {
-                    sh 'docker push ${repository}:latest' // Push the correct repository
+                    services.split(',').each { service ->
+                        sh "docker push ${DOCKER_IMAGE_PREFIX}-${service}:${PUSH_VERSION}"
+                    }
+                    sh "docker push ${DOCKER_IMAGE_PREFIX}-config-server:${PUSH_VERSION}"  // Config-server 이미지도 푸시
                 }
             }
         }
 
         stage('Cleaning up') {
             steps {
-                sh "docker rmi ${repository}:latest" // Clean up the pushed image
+                script {
+                    services.split(',').each { service ->
+                        sh "docker rmi ${DOCKER_IMAGE_PREFIX}-${service}:${PUSH_VERSION}"
+                    }
+                    sh "docker rmi ${DOCKER_IMAGE_PREFIX}-config-server:${PUSH_VERSION}"  // Config-server 이미지도 제거
+                }
             }
         }
     }
