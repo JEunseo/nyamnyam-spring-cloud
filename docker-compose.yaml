@@ -129,4 +129,4 @@ services:
 
 networks:
   nyamnyam-kr:  # 네트워크 정의 추가
-    driver: bridge
+    driver: bridge #
