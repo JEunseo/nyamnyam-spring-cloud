@@ -56,7 +56,6 @@ pipeline {
             steps {
                 script {
                     dir('/var/lib/jenkins/workspace/nyamnyam') { // docker-compose.yaml이 있는 경로
-                        // docker-compose.yaml 파일이 있는 디렉토리에서 compose up 실행
                         sh 'docker-compose up -d'
                     }
                 }
