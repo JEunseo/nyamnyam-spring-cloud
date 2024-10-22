@@ -47,6 +47,7 @@ pipeline {
                 }
             }
         }
+
         stage("Docker Image Remove") {
             steps {
                 script {
@@ -66,17 +67,21 @@ pipeline {
         stage('Docker Image Build') {
             steps {
                 sh "cd server/config-server && docker build -t jeunseo/nyamnyam-config-server:latest ."
+                sh "docker-compose build"
             }
         }
 
-        stage('Compose Up') { // docker-compose up을 실행하는 단계
+        stage('Docker Push') {
             steps {
                 script {
-                    dir('/var/lib/jenkins/workspace/nyamnyam') { // docker-compose.yaml이 있는 경로
-                        sh 'docker-compose build -d'
-
-                    }
+                    sh 'docker push ${repository}:latest' // Push the correct repository
                 }
+            }
+        }
+
+        stage('Cleaning up') {
+            steps {
+                sh "docker rmi ${repository}:latest" // Clean up the pushed image
             }
         }
     }
