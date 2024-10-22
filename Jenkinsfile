@@ -52,12 +52,6 @@ pipeline {
             }
         }
 
-        stage('Create Network') {
-            steps {
-                sh 'docker network create nyamnyam-kr || true'
-            }
-        }
-
         stage('Compose Up') { // docker-compose up을 실행하는 단계
             steps {
                 script {
