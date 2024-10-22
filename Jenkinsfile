@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     environment {
+        PUSH_VERSION = "1.0"
         DOCKER_CREDENTIALS_ID = 'dockerhub-id'
         DOCKER_IMAGE_PREFIX = 'jeunseo/nyamnyam-config-server'
         services = "server/config-server,server/eureka-server,server/gateway-server,service/admin-service,service/chat-service,service/post-service,service/restaurant-service,service/user-service"

@@ -1,11 +1,11 @@
 services:
   eureka:
-    hostname: eureka
+    hostname: eureka-server
     build:
       context: ./server/eureka-server
       dockerfile: Dockerfile
-    image: nyamnyam/eureka:latest
-    container_name: eureka
+    image: nyamnyam/eureka-server:latest
+    container_name: eureka-server
     ports:
       - "8761:8761"
     networks:
@@ -121,3 +121,7 @@ services:
         condition: service_healthy
     networks:
       - nyamnyam-kr
+
+networks:
+  nyamnyam-kr:  # 네트워크 정의 추가
+    driver: bridge
