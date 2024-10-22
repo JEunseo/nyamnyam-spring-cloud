@@ -30,22 +30,22 @@ pipeline {
         }
 
         stage('Build JAR') {
-            steps {
-                script {
-                    sh 'chmod +x gradlew'
+                    steps {
+                        script {
+                            sh 'chmod +x ./gradlew'  // 루트 디렉토리에서 gradlew 실행 가능하게 변경
 
-                    // services 환경 변수를 Groovy 리스트로 변환
-                    def servicesList = env.services.split(',')
+                            // services 환경 변수를 Groovy 리스트로 변환
+                            def servicesList = env.services.split(',')
 
-                    // 각 서비스에 대해 Gradle 빌드 수행 (테스트 제외)
-                    servicesList.each { service ->
-                        dir(service) {
-                            sh "../../gradlew clean build --warning-mode all -x test"
+                            // 각 서비스에 대해 Gradle 빌드 수행 (테스트 제외)
+                            servicesList.each { service ->
+                                dir(service) {
+                                    sh "../../gradlew clean build --warning-mode all -x test"
+                                }
+                            }
                         }
                     }
                 }
-            }
-        }
 
         stage('Docker Config-Server Image Build') {
             steps {
