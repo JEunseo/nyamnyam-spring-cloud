@@ -1,5 +1,3 @@
-** 수정 전
-
 pipeline {
     agent any
 
@@ -42,7 +40,7 @@ pipeline {
                     // 각 서비스에 대해 Gradle 빌드 수행 (테스트 제외)
                     servicesList.each { service ->
                         dir(service) {
-                             sh "../../gradlew clean bootJar"
+                            sh "../../gradlew clean bootJar"
                         }
                     }
                 }
@@ -53,12 +51,12 @@ pipeline {
             steps {
                 script {
                     services.split(',').each { service ->
-                        def imageExists = sh(script: "docker images -q $COMPOSE_TAGNAME/${service}:$PUSH_VERSION", returnStdout: true).trim()
+                        def imageExists = sh(script: "docker images -q ${DOCKER_IMAGE_PREFIX}/${service}:${PUSH_VERSION}", returnStdout: true).trim()
                         if (imageExists) {
-                            sh "docker rmi -f $COMPOSE_TAGNAME/${service}:$PUSH_VERSION"
-                            sh "docker rmi -f $DOCKERHUB_CREDENTIALS_ID/${service}:$PUSH_VERSION"
+                            sh "docker rmi -f ${DOCKER_IMAGE_PREFIX}/${service}:${PUSH_VERSION}"
+                            sh "docker rmi -f ${DOCKER_CREDENTIALS_ID}/${service}:${PUSH_VERSION}"
                         } else {
-                            echo "Image $COMPOSE_TAGNAME/${service}:$PUSH_VERSION not found, skipping..."
+                            echo "Image ${DOCKER_IMAGE_PREFIX}/${service}:${PUSH_VERSION} not found, skipping..."
                         }
                     }
                 }
@@ -72,44 +70,39 @@ pipeline {
             }
         }
 
-         stage('Login to Docker Hub') {
-                            steps {
-                                sh '''
-                                echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
-                                '''
-                            }
-                 }
-
+        stage('Login to Docker Hub') {
+            steps {
+                sh '''
+                echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
+                '''
+            }
+        }
 
         stage('Docker Push') {
-                    steps {
-                        script {
+            steps {
+                script {
+                    def servicesList = env.services.split(',')
 
-                            def servicesList = env.services.split(',')
-
-                            servicesList.each { service ->
-                                def serviceName = service.split('/')[1] // 서비스 이름 추출
-                                // 각 서비스의 Docker 이미지를 푸시
-                                sh "docker push ${DOCKER_CREDENTIALS_ID}/nyamnyam-${serviceName}:latest"
-                            }
-                        }
-                    }
-                }
-
-
-
-        stage('Cleaning up') {
-                    steps {
-                        script {
-                            // 각 서비스의 이미지 삭제
-                            def servicesList = env.services.split(',')
-                            servicesList.each { service ->
-                                def serviceName = service.split('/')[1] // 서비스 이름 추출
-                                sh "docker rmi ${DOCKER_CREDENTIALS_ID}/nyamnyam-${serviceName}:latest" // Clean up the pushed image
-                            }
-                        }
+                    servicesList.each { service ->
+                        def serviceName = service.split('/')[1] // 서비스 이름 추출
+                        // 각 서비스의 Docker 이미지를 푸시
+                        sh "docker push ${DOCKER_CREDENTIALS_ID}/nyamnyam-${serviceName}:latest"
                     }
                 }
             }
         }
 
+        stage('Cleaning up') {
+            steps {
+                script {
+                    // 각 서비스의 이미지 삭제
+                    def servicesList = env.services.split(',')
+                    servicesList.each { service ->
+                        def serviceName = service.split('/')[1] // 서비스 이름 추출
+                        sh "docker rmi ${DOCKER_CREDENTIALS_ID}/nyamnyam-${serviceName}:latest" // Clean up the pushed image
+                    }
+                }
+            }
+        }
+    }
+}
