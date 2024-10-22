@@ -1,11 +1,13 @@
+** 수정 전
+
 pipeline {
     agent any
 
     environment {
-        PUSH_VERSION = "1.0"
-        DOCKER_CREDENTIALS_ID = 'dockerhub-id'
-        DOCKER_IMAGE_PREFIX = 'jeunseo/nyamnyam'
-        services = "eureka-server,gateway-server,admin-service,chat-service,post-service,restaurant-service,user-service"
+        DOCKER_CREDENTIALS_ID = 'jeunseo'
+        DOCKER_CREDENTIALS = credentials('dockerhub-id')
+        DOCKER_IMAGE_PREFIX = 'jeunseo/nyamnyam-config-server'
+        services = "server/config-server,server/eureka-server,server/gateway-server,service/admin-service,service/chat-service,service/post-service,service/restaurant-service,service/user-service"
     }
 
     stages {
@@ -32,36 +34,31 @@ pipeline {
         stage('Build JAR') {
             steps {
                 script {
-                    sh 'chmod +x ./gradlew'  // 프로젝트 루트에서 gradlew 실행 가능하게 변경
+                    sh 'chmod +x gradlew'
 
                     // services 환경 변수를 Groovy 리스트로 변환
                     def servicesList = env.services.split(',')
 
                     // 각 서비스에 대해 Gradle 빌드 수행 (테스트 제외)
-                    servicesList.each { service -> // 서비스별로 디렉토리를 이동하지 않고 루트 디렉토리에서 빌드 실행
-                       sh "./gradlew :${service}:clean :${service}:build --warning-mode all -x test"
+                    servicesList.each { service ->
+                        dir(service) {
+                             sh "../../gradlew clean bootJar"
+                        }
                     }
                 }
             }
         }
 
-        stage('Docker Config-Server Image Build') {
-            steps {
-                script {
-                    sh "cd server/config-server && docker build -t ${DOCKER_IMAGE_PREFIX}-config-server:${PUSH_VERSION} ."
-                }
-            }
-        }
-
-        stage('Docker Image Remove') {
+        stage("Docker Image Remove") {
             steps {
                 script {
                     services.split(',').each { service ->
-                        def imageExists = sh(script: "docker images -q ${DOCKER_IMAGE_PREFIX}-${service}:${PUSH_VERSION}", returnStdout: true).trim()
+                        def imageExists = sh(script: "docker images -q $COMPOSE_TAGNAME/${service}:$PUSH_VERSION", returnStdout: true).trim()
                         if (imageExists) {
-                            sh "docker rmi -f ${DOCKER_IMAGE_PREFIX}-${service}:${PUSH_VERSION}"
+                            sh "docker rmi -f $COMPOSE_TAGNAME/${service}:$PUSH_VERSION"
+                            sh "docker rmi -f $DOCKERHUB_CREDENTIALS_ID/${service}:$PUSH_VERSION"
                         } else {
-                            echo "Image ${DOCKER_IMAGE_PREFIX}-${service}:${PUSH_VERSION} not found, skipping..."
+                            echo "Image $COMPOSE_TAGNAME/${service}:$PUSH_VERSION not found, skipping..."
                         }
                     }
                 }
@@ -70,30 +67,49 @@ pipeline {
 
         stage('Docker Image Build') {
             steps {
+                sh "cd server/config-server && docker build -t ${DOCKER_CREDENTIALS_ID}/nyamnyam-config-server:latest ."
                 sh "docker-compose build"
             }
         }
 
+         stage('Login to Docker Hub') {
+                            steps {
+                                sh '''
+                                echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
+                                '''
+                            }
+                 }
+
+
         stage('Docker Push') {
-            steps {
-                script {
-                    services.split(',').each { service ->
-                        sh "docker push ${DOCKER_IMAGE_PREFIX}-${service}:${PUSH_VERSION}"
+                    steps {
+                        script {
+
+                            def servicesList = env.services.split(',')
+
+                            servicesList.each { service ->
+                                def serviceName = service.split('/')[1] // 서비스 이름 추출
+                                // 각 서비스의 Docker 이미지를 푸시
+                                sh "docker push ${DOCKER_CREDENTIALS_ID}/nyamnyam-${serviceName}:latest"
+                            }
+                        }
                     }
-                    sh "docker push ${DOCKER_IMAGE_PREFIX}-config-server:${PUSH_VERSION}"  // Config-server 이미지도 푸시
+                }
+
+
+
+        stage('Cleaning up') {
+                    steps {
+                        script {
+                            // 각 서비스의 이미지 삭제
+                            def servicesList = env.services.split(',')
+                            servicesList.each { service ->
+                                def serviceName = service.split('/')[1] // 서비스 이름 추출
+                                sh "docker rmi ${DOCKER_CREDENTIALS_ID}/nyamnyam-${serviceName}:latest" // Clean up the pushed image
+                            }
+                        }
+                    }
                 }
             }
         }
 
-        stage('Cleaning up') {
-            steps {
-                script {
-                    services.split(',').each { service ->
-                        sh "docker rmi ${DOCKER_IMAGE_PREFIX}-${service}:${PUSH_VERSION}"
-                    }
-                    sh "docker rmi ${DOCKER_IMAGE_PREFIX}-config-server:${PUSH_VERSION}"  // Config-server 이미지도 제거
-                }
-            }
-        }
-    }
-}

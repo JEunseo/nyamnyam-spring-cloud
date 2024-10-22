@@ -4,7 +4,7 @@ services:
     build:
       context: ./server/eureka-server
       dockerfile: Dockerfile
-    image: nyamnyam/eureka-server:latest
+    image: jeunseo/nyamnyam-eureka-server:latest
     container_name: eureka-server
     ports:
       - "8761:8761"
@@ -21,7 +21,7 @@ services:
     build:
       context: ./server/gateway-server
       dockerfile: Dockerfile
-    image: nyamnyam/gateway-server:latest
+    image: jeunseo/nyamnyam-gateway-server:latest
     container_name: gateway-server
     ports:
       - "8000:8000"
@@ -42,7 +42,7 @@ services:
     build:
       context: ./service/admin-service
       dockerfile: Dockerfile
-    image: nyamnyam/admin-service:latest
+    image: jeunseo/nyamnyam-admin-service:latest
     container_name: admin-service
     ports:
       - "8001:8001"
@@ -59,7 +59,7 @@ services:
     build:
       context: ./service/chat-service
       dockerfile: Dockerfile
-    image: nyamnyam/chat-service:latest
+    image: jeunseo/nyamnyam-chat-service:latest
     container_name: chat-service
     ports:
       - "8002:8002"
@@ -76,7 +76,7 @@ services:
     build:
       context: ./service/post-service
       dockerfile: Dockerfile
-    image: nyamnyam/post-service:latest
+    image: jeunseo/nyamnyam-post-service:latest
     container_name: post-service
     ports:
       - "8003:8003"
@@ -93,7 +93,7 @@ services:
     build:
       context: ./service/restaurant-service
       dockerfile: Dockerfile
-    image: nyamnyam/restaurant-service:latest
+    image: jeunseo/nyamnyam-restaurant-service:latest
     container_name: restaurant-service
     ports:
       - "8004:8004"
@@ -111,7 +111,7 @@ services:
     build:
       context: ./service/user-service
       dockerfile: Dockerfile
-    image: nyamnyam/user-service:latest
+    image: jeunseo/nyamnyam-user-service:latest
     container_name: user-service
     ports:
       - "8005:8005"
