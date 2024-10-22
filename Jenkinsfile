@@ -21,7 +21,7 @@ pipeline {
             steps {
                 script {
                     sh "chmod +x ./gradlew"  // gradlew에 실행 권한 부여
-                    services.split(',').each { service ->
+                    env.services.split(',').each { service ->  // env.services로 접근해야 함
                         sh "./gradlew clean build -p server/${service} --warning-mode all"  // 각 서비스 빌드
                     }
                 }
@@ -32,7 +32,7 @@ pipeline {
         stage("Docker Image Remove") {
             steps {
                 script {
-                    services.split(',').each { service ->
+                    env.services.split(',').each { service ->  // env.services로 접근
                         sh "docker rmi -f ${DOCKER_IMAGE_PREFIX}/${service}:${PUSH_VERSION}"  // 이전 Docker 이미지 제거
                     }
                 }
@@ -43,7 +43,7 @@ pipeline {
         stage("Docker Image Build") {
             steps {
                 script {
-                    services.split(',').each { service ->
+                    env.services.split(',').each { service ->  // env.services로 접근
                         sh "docker build -t ${DOCKER_IMAGE_PREFIX}/${service}:${PUSH_VERSION} ."  // Docker 이미지 빌드
                     }
                 }
@@ -54,7 +54,7 @@ pipeline {
         stage("Docker Push") {
             steps {
                 script {
-                    services.split(',').each { service ->
+                    env.services.split(',').each { service ->  // env.services로 접근
                         sh "docker push ${DOCKER_IMAGE_PREFIX}/${service}:${PUSH_VERSION}"  // Docker 이미지 푸시
                     }
                 }
@@ -65,7 +65,7 @@ pipeline {
         stage('Apply Kubernetes files') {
             steps {
                 withKubeConfig([credentialsId: 'kubeconfig']) {
-                    services.split(',').each { service ->
+                    env.services.split(',').each { service ->  // env.services로 접근
                         sh "kubectl --kubeconfig=$HOME/.ncloud/kubeconfig.yml apply -f ./k8s/${service}-deployment.yml"  // Kubernetes 배포 적용
                         sh "kubectl --kubeconfig=$HOME/.ncloud/kubeconfig.yml apply -f ./k8s/${service}-service.yml"  // Kubernetes 서비스 적용
                     }
