@@ -7,7 +7,7 @@ pipeline {
     }
 
     stages {
-        stage('Checkout SCM') {
+       stage('Checkout SCM') {
             steps {
                 checkout scm
             }
@@ -22,31 +22,37 @@ pipeline {
 
                     dir ('server/config-server/src/main/resources/secret-server') {
                         git branch: 'main', url: 'https://github.com/JEunseo/nyamnyam-secret-server.git', credentialsId: 'github_personal_access_token'
-
                     }
                 }
             }
         }
 
-        // 프로젝트 빌드 단계 추가
-                stage('Build Project') {
-                    steps {
-                        script {
-                            dir('server/config-server') {
-                                sh './gradlew build'  // Gradle 빌드를 수행
-                            }
-                        }
-                    }
-                }
-
-        stage('Docker Build & Push') {
+        stage('Build JAR') {
             steps {
                 script {
-                    dir('server/config-server') {
-                        sh 'pwd'
-                        // Docker 빌드 및 푸시 명령어 추가
-                        sh "docker build -t ${DOCKER_IMAGE_PREFIX}/config-server:latest ."
-                        sh "docker push ${DOCKER_IMAGE_PREFIX}/config-server:latest"
+                    sh 'chmod +x gradlew' // gradlew에 실행 권한 부여
+
+                    // 각 서버에 대해 gradlew를 실행하고, --warning-mode all 옵션 추가
+                    def services = [
+                        'server/config-server',
+                        'server/eureka-server',
+                        'server/gateway-server',
+                        'service/admin-service',
+                        'service/chat-service',
+                        'service/post-service',
+                        'service/restaurant-service',
+                        'service/user-service'
+                    ]
+
+                    for (service in services) {
+                        dir(service) {
+                            sh "../../gradlew clean build --warning-mode all"
+                            // 테스트 실행 및 실패 시 처리
+                            def testResult = sh(script: "../../gradlew test", returnStatus: true)
+                            if (testResult != 0) {
+                                error "Tests failed for ${service}"
+                            }
+                        }
                     }
                 }
             }
