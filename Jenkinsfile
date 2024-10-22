@@ -48,15 +48,20 @@ pipeline {
             }
         }
         stage("Docker Image Remove") {
-                    steps {
-                        script {
-                            services.split(',').each { service ->
-                                sh "docker rmi -f $COMPOSE_TAGNAME/${service}:$PUSH_VERSION"
-                                sh "docker rmi -f $DOCKERHUB_CREDENTIALS_ID/${service}:$PUSH_VERSION"
-                            }
+            steps {
+                script {
+                    services.split(',').each { service ->
+                        def imageExists = sh(script: "docker images -q $COMPOSE_TAGNAME/${service}:$PUSH_VERSION", returnStdout: true).trim()
+                        if (imageExists) {
+                            sh "docker rmi -f $COMPOSE_TAGNAME/${service}:$PUSH_VERSION"
+                            sh "docker rmi -f $DOCKERHUB_CREDENTIALS_ID/${service}:$PUSH_VERSION"
+                        } else {
+                            echo "Image $COMPOSE_TAGNAME/${service}:$PUSH_VERSION not found, skipping..."
                         }
                     }
                 }
+            }
+        }
 
         stage('Docker Image Build') {
             steps {
