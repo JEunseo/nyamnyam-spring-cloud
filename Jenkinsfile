@@ -73,7 +73,7 @@ pipeline {
             steps {
                 script {
                     dir('/var/lib/jenkins/workspace/nyamnyam') { // docker-compose.yaml이 있는 경로
-                        sh 'docker-compose up -d'
+                        sh 'docker-compose build -d'
 
                     }
                 }
