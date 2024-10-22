@@ -38,11 +38,8 @@ pipeline {
                     def servicesList = env.services.split(',')
 
                     // 각 서비스에 대해 Gradle 빌드 수행 (테스트 제외)
-                    servicesList.each { service ->
-                        dir(service) {
-                            // 서비스 디렉토리에서 상대 경로로 gradlew 실행하지 않음
-                            sh "../../gradlew clean build --warning-mode all -x test"
-                        }
+                    servicesList.each { service -> // 서비스별로 디렉토리를 이동하지 않고 루트 디렉토리에서 빌드 실행
+                       sh "./gradlew :${service}:clean :${service}:build --warning-mode all -x test"
                     }
                 }
             }
