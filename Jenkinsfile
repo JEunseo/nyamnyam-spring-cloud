@@ -34,7 +34,7 @@ pipeline {
                     dir('server/config-server') {
                         sh 'pwd'
                         // Docker 빌드 및 푸시 명령어 추가
-                        sh "docker build -t ${DOCKER_IMAGE_PREFIX}/config-server:latest server/config-server"
+                        sh "docker build -t ${DOCKER_IMAGE_PREFIX}/config-server:latest ."
                         sh "docker push ${DOCKER_IMAGE_PREFIX}/config-server:latest"
                     }
                 }
