@@ -47,22 +47,6 @@ pipeline {
             }
         }
 
-        stage("Docker Image Remove") {
-            steps {
-                script {
-                    services.split(',').each { service ->
-                        def imageExists = sh(script: "docker images -q ${DOCKER_IMAGE_PREFIX}/${service}:${PUSH_VERSION}", returnStdout: true).trim()
-                        if (imageExists) {
-                            sh "docker rmi -f ${DOCKER_IMAGE_PREFIX}/${service}:${PUSH_VERSION}"
-                            sh "docker rmi -f ${DOCKER_CREDENTIALS_ID}/${service}:${PUSH_VERSION}"
-                        } else {
-                            echo "Image ${DOCKER_IMAGE_PREFIX}/${service}:${PUSH_VERSION} not found, skipping..."
-                        }
-                    }
-                }
-            }
-        }
-
         stage('Docker Image Build') {
             steps {
                 sh "cd server/config-server && docker build -t ${DOCKER_CREDENTIALS_ID}/nyamnyam-config-server:latest ."
