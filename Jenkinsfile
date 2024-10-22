@@ -50,7 +50,7 @@ pipeline {
                             dir(service) {
                                 sh "../../gradlew clean build --warning-mode all"
 
-                                // 테스트 실행 및 실패 시 처리
+                                // 테스트 실행 및 실패 시 처리 //
                                 def testResult = sh(script: "../../gradlew test", returnStatus: true)
                                 if (testResult != 0) {
                                     error "Tests failed for ${service}"
