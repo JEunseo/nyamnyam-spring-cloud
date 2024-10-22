@@ -49,6 +49,7 @@ pipeline {
             steps {
                 sh "cd server/config-server && docker build -t jeunseo/nyamnyam-config-server:latest ."
                 sh "docker-compose up --build -d"
+
             }
         }
     }
