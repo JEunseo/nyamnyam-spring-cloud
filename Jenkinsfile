@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         repository = "jeunseo/nyamnyam-config-server"  //docker hub id와 repository 이름
-        DOCKERHUB_CREDENTIALS = credentials('gitbud_personal_access_token') // jenkins에 등록해 놓은 docker hub credentials 이름
+        DOCKERHUB_CREDENTIALS = credentials('github_personal_access_token') // jenkins에 등록해 놓은 docker hub credentials 이름
         dockerImage = "${repository}:latest"
     }
 
