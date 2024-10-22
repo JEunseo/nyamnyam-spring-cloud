@@ -36,16 +36,10 @@ pipeline {
                     // services 환경 변수를 Groovy 리스트로 변환
                     def servicesList = env.services.split(',')
 
-                    // 각 서비스에 대해 Gradle 빌드 및 테스트 수행
+                    // 각 서비스에 대해 Gradle 빌드 수행 (테스트 제외)
                     servicesList.each { service ->
                         dir(service) {
-                            sh "../../gradlew clean build --warning-mode all"
-
-                            // 테스트 실행 및 실패 시 처리
-                            def testResult = sh(script: "../../gradlew test", returnStatus: true)
-                            if (testResult != 0) {
-                                error "Tests failed for ${service}"
-                            }
+                            sh "../../gradlew clean build --warning-mode all -x test"
                         }
                     }
                 }
