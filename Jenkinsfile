@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_CREDENTIALS_ID = 'jeunseo'
+        DOCKER_CREDENTIALS_ID = 'dockerhub-id'
         DOCKER_IMAGE_PREFIX = 'jeunseo/nyamnyam-config-server'
         services = "server/config-server,server/eureka-server,server/gateway-server,service/admin-service,service/chat-service,service/post-service,service/restaurant-service,service/user-service"
     }
@@ -49,6 +49,12 @@ pipeline {
         stage('Docker Image Build') {
             steps {
                 sh "cd server/config-server && docker build -t jeunseo/nyamnyam-config-server:latest ."
+            }
+        }
+
+        stage('Create Network') {
+            steps {
+                sh 'docker network create nyamnyam-kr || true'
             }
         }
 
