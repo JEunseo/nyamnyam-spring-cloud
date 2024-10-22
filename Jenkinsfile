@@ -2,74 +2,45 @@ pipeline {
     agent any
 
     environment {
-        repository = "jeunseo/nyamnyam-config-server"  //docker hub id와 repository 이름
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-id') // jenkins에 등록해 놓은 docker hub credentials 이름
-        dockerImage = "${repository}:latest"
+        DOCKER_CREDENTIALS_ID = 'jeunseo'
+        DOCKER_IMAGE_PREFIX = 'jeunseo/nyamnyam-config-server'
     }
 
     stages {
         stage('Git Clone') {
             steps {
-                git branch: 'main', url: 'https://github.com/JEunseo/nyamnyam-spring-cloud.git'
-            }
-        }
-
-        stage('Build') {
-            steps {
-                dir("./") {
-                    sh "./gradlew clean build --stacktrace"
+                script {
+                    // .ncloud 디렉토리 내의 서버 경로로 이동 후 Git 클론 실행
+                    dir('.ncloud/server/config-server') {
+                        git branch: 'main', url: 'https://github.com/JEunseo/nyamnyam-config-server.git'
+                    }
                 }
             }
         }
 
-        stage('Build-image') {
+        stage('Checkout SCM') {
             steps {
                 script {
-                    sh "docker build -t ${dockerImage} ."
+                    // 다른 리포지토리나 추가적인 소스 코드 체크아웃
+                    dir('.ncloud/server/config-server') {
+                        checkout scm
+                    }
                 }
             }
         }
 
-        stage('Login') {
+        stage('Docker Build & Push') {
             steps {
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                script {
+                    // Docker 빌드 및 푸시를 실행할 디렉토리로 이동
+                    dir('.ncloud/server/config-server') {
+                        sh 'pwd'
+                        // Docker 빌드 및 푸시 명령어 실행
+                        sh "docker build -t ${DOCKER_IMAGE_PREFIX}:latest ."
+                        sh "docker push ${DOCKER_IMAGE_PREFIX}:latest"
+                    }
+                }
             }
         }
-        stage('Docker Push') {
-          steps {
-              script {
-                sh 'docker push ${dockerImage}' //docker push
-              }
-          }
-        }
-
-        stage('Cleaning up') {
-            steps {
-              sh "docker rmi ${dockerImage}" // docker image 제거
-              }
-        }
-
-        stage('SSH transfer') {
-            steps {
-                sshPublisher(
-                    continueOnError: false, failOnError: true,
-                    publishers: [
-                        sshPublisherDesc(
-                            configName: "ec2-deploy",//Jenkins 시스템 정보에 사전 입력한 서버 ID
-                            verbose: true,
-                            transfers: [
-                                sshTransfer(
-                                    sourceFiles: "scripts/deploy.sh", //전송할 파일
-                                    removePrefix: "scripts", //파일에서 삭제할 경로가 있다면 작성
-                                    execCommand: """echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
-                                    sh deploy.sh""" //원격지에서 실행할 커맨드
-                                    )
-                            ]
-                        )
-                    ]
-                )
-            }
-        }
-
     }
 }
