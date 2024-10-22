@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         PUSH_VERSION = "1.0"
+        COMPOSE_TAGNAME = 'nyamnyam'
         DOCKER_CREDENTIALS_ID = 'dockerhub-id'
         DOCKER_IMAGE_PREFIX = 'jeunseo/nyamnyam-config-server'
         services = "server/config-server,server/eureka-server,server/gateway-server,service/admin-service,service/chat-service,service/post-service,service/restaurant-service,service/user-service"
@@ -46,6 +47,16 @@ pipeline {
                 }
             }
         }
+        stage("Docker Image Remove") {
+                    steps {
+                        script {
+                            services.split(',').each { service ->
+                                sh "docker rmi -f $COMPOSE_TAGNAME/${service}:$PUSH_VERSION"
+                                sh "docker rmi -f $DOCKERHUB_CREDENTIALS_ID/${service}:$PUSH_VERSION"
+                            }
+                        }
+                    }
+                }
 
         stage('Docker Image Build') {
             steps {
