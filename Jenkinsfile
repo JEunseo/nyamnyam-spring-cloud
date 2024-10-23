@@ -26,6 +26,9 @@ pipeline {
                     dir('server/config-server/src/main/resources/secret-server') {
                         git branch: 'main', url: 'https://github.com/JEunseo/nyamnyam-secret-server.git', credentialsId: 'github_personal_access_token'
                     }
+                    dir('deploy'){
+                        git branch: 'main', url: 'https://github.com/JEunseo/nyamnyam-deploy.git', credentialsId: 'github_personal_access_token'
+                    }
                 }
             }
         }
@@ -94,7 +97,9 @@ pipeline {
                 script {
                     withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
                         // Git 클론 후 작업 디렉터리에서 파일을 찾아 배포
-                        sh 'kubectl apply -f deploy/web/nyamnyam-web.yaml --kubeconfig=$KUBECONFIG'
+                        dir('deploy') {
+                            sh 'kubectl apply -f web/nyamnyam-web.yaml --kubeconfig=$KUBECONFIG'
+                        }
                     }
                 }
             }
