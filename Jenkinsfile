@@ -6,6 +6,8 @@ pipeline {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-id')
         DOCKER_IMAGE_PREFIX = 'jeunseo/nyamnyam-config-server'
         KUBECONFIG_CREDENTIALS_ID = 'kubeconfig'
+        NCP_API_KEY = credentials('ncloud-api-key')
+        NCP_SECRET_KEY = credentials('ncloud-secret-key')
         services = "server/config-server,server/eureka-server,server/gateway-server,service/admin-service,service/chat-service,service/post-service,service/restaurant-service,service/user-service"
     }
 
@@ -26,7 +28,7 @@ pipeline {
                     dir('server/config-server/src/main/resources/secret-server') {
                         git branch: 'main', url: 'https://github.com/JEunseo/nyamnyam-secret-server.git', credentialsId: 'github_personal_access_token'
                     }
-                    dir('deploy'){
+                    dir('deploy') {
                         git branch: 'main', url: 'https://github.com/JEunseo/nyamnyam-deploy.git', credentialsId: 'github_personal_access_token'
                     }
                 }
@@ -92,14 +94,17 @@ pipeline {
                 }
             }
         }
+
         stage('Deploy to k8s') {
             steps {
                 script {
                     withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-
-                        dir('deploy') {
-                            sh 'kubectl apply -f web/nyamnyam-web.yaml --kubeconfig=$KUBECONFIG'
-                        }
+                        // 환경 변수로 API Key와 Secret Key 설정 후 ncp-iam-authenticator에 전달
+                        sh '''
+                        export NCP_ACCESS_KEY=$NCP_API_KEY
+                        export NCP_SECRET_KEY=$NCP_SECRET_KEY
+                        kubectl apply -f deploy/web/nyamnyam-web.yaml --kubeconfig=$KUBECONFIG
+                        '''
                     }
                 }
             }
