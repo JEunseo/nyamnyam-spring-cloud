@@ -96,7 +96,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-                        // Git 클론 후 작업 디렉터리에서 파일을 찾아 배포
+
                         dir('deploy') {
                             sh 'kubectl apply -f web/nyamnyam-web.yaml --kubeconfig=$KUBECONFIG'
                         }
