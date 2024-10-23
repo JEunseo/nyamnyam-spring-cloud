@@ -1,0 +1,3 @@
+[submodule "deploy"]
+	path = deploy
+	url = https://github.com/JEunseo/nyamnyam-deploy.git

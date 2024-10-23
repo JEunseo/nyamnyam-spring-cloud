@@ -5,6 +5,7 @@ pipeline {
         DOCKER_CREDENTIALS_ID = 'jeunseo'
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-id')
         DOCKER_IMAGE_PREFIX = 'jeunseo/nyamnyam-config-server'
+        KUBECONFIG_CREDENTIALS_ID = 'kubeconfig'
         services = "server/config-server,server/eureka-server,server/gateway-server,service/admin-service,service/chat-service,service/post-service,service/restaurant-service,service/user-service"
     }
 
@@ -84,6 +85,16 @@ pipeline {
                     servicesList.each { service ->
                         def serviceName = service.split('/')[1] // 서비스 이름 추출
                         sh "docker rmi ${DOCKER_CREDENTIALS_ID}/nyamnyam-${serviceName}:latest" // Clean up the pushed image
+                    }
+                }
+            }
+        }
+        stage('Deploy to k8s') {
+            steps {
+                script {
+                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                        // Git 클론 후 작업 디렉터리에서 파일을 찾아 배포
+                        sh 'kubectl apply -f deploy/web/nyamnyam-web.yaml --kubeconfig=$KUBECONFIG'
                     }
                 }
             }
