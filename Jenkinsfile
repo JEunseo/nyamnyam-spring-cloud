@@ -131,7 +131,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-                        // 환경 변수로 API Key와 Secret Key 설정 후 ncp-iam-~에 전달
+                        // 환경 변수로 API Key와 Secret Key 설정 후 ncp-iam-~에 전
                         sh '''
                         export NCP_ACCESS_KEY=$NCP_API_KEY
                         export NCP_SECRET_KEY=$NCP_SECRET_KEY
