@@ -87,7 +87,7 @@ pipeline {
 
                     servicesList.each { service ->
                         def serviceName = service.split('/')[1] // 서비스 이름 추출
-                        // 각 서비스의 Docker 이미지를 푸시
+                        // 각 서비스의 Docker 이미지를 푸
                         sh "docker push ${DOCKER_CREDENTIALS_ID}/nyamnyam-${serviceName}:latest"
                     }
                 }
