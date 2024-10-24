@@ -35,32 +35,6 @@ pipeline {
             }
         }
 
-        stage('Create Namespace and ConfigMap') {
-            steps {
-                script {
-                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-                        // 먼저 네임스페이스 생성
-                        sh '''
-                        kubectl apply -f deploy/namespace/nyamnyam-namespace.yaml --kubeconfig=$KUBECONFIG
-                        '''
-
-                        // ConfigMap 생성 명령어 실행
-                        sh '''
-                        kubectl create configmap post-service-config --namespace=nyamnyam \
-                          --from-literal=server.port=8080 \
-                          --from-literal=spring.datasource.url=jdbc:mysql://223.130.131.65:3306/nyamnyamdb \
-                          --from-literal=spring.datasource.username=root \
-                          --from-literal=spring.datasource.password=1234 \
-                          --from-literal=spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver \
-                          --from-literal=spring.jpa.show-sql=true \
-                          --from-literal=spring.jpa.hibernate.ddl-auto=update \
-                          --dry-run=client -o yaml | kubectl apply -f -
-                        '''
-                    }
-                }
-            }
-        }
-
         stage('Build JAR') {
             steps {
                 script {
@@ -116,6 +90,19 @@ pipeline {
                     servicesList.each { service ->
                         def serviceName = service.split('/')[1] // 서비스 이름 추출
                         sh "docker rmi ${DOCKER_CREDENTIALS_ID}/nyamnyam-${serviceName}:latest" // Clean up the pushed image
+                    }
+                }
+            }
+        }
+
+        stage('Create ConfigMap') {
+            steps {
+                script {
+                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                        sh '''
+                        # ConfigMap 생성 및 적용
+                        kubectl create configmap config-server --from-file=server/config-server/src/main/resources/application.yaml -n nyamnyam --dry-run=client -o yaml | kubectl apply -f -
+                        '''
                     }
                 }
             }
