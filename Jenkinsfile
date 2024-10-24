@@ -18,6 +18,18 @@ pipeline {
             }
         }
 
+       stage('Create Namespace') {
+            steps {
+                script {
+                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                        sh '''
+                        kubectl apply -f deploy/namespace/nyamnyam-namespace.yaml --kubeconfig=$KUBECONFIG
+                        '''
+                    }
+                }
+            }
+        }
+
         stage('Git Clone') {
             steps {
                 script {
@@ -90,18 +102,6 @@ pipeline {
                     servicesList.each { service ->
                         def serviceName = service.split('/')[1] // 서비스 이름 추출
                         sh "docker rmi ${DOCKER_CREDENTIALS_ID}/nyamnyam-${serviceName}:latest" // Clean up the pushed image
-                    }
-                }
-            }
-        }
-
-        stage('Create Namespace') {
-            steps {
-                script {
-                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-                        sh '''
-                        kubectl apply -f deploy/namespace/nyamnyam-namespace.yaml --kubeconfig=$KUBECONFIG
-                        '''
                     }
                 }
             }
