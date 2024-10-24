@@ -94,17 +94,18 @@ pipeline {
                 }
             }
         }
+
         stage('Create Namespace') {
-                    steps {
-                        script {
-                            withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-                                sh '''
-                                kubectl apply -f deploy/namespace/nyamnyam-namespace.yaml --kubeconfig=$KUBECONFIG
-                                '''
-                            }
-                        }
+            steps {
+                script {
+                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                        sh '''
+                        kubectl apply -f deploy/namespace/nyamnyam-namespace.yaml --kubeconfig=$KUBECONFIG
+                        '''
                     }
                 }
+            }
+        }
 
         stage('Create ConfigMap') {
             steps {
@@ -118,7 +119,6 @@ pipeline {
                 }
             }
         }
-
 
         stage('Deploy to k8s') {
             steps {
