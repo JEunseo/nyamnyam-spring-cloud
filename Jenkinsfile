@@ -103,7 +103,7 @@ pipeline {
                         sh '''
                         export NCP_ACCESS_KEY=$NCP_API_KEY
                         export NCP_SECRET_KEY=$NCP_SECRET_KEY
-                        kubectl apply -f deploy/was/config-server/config-server.yaml --kubeconfig=$KUBECONFIG
+                        kubectl apply -f deploy/was/post-service/post-service.yaml --kubeconfig=$KUBECONFIG
                         '''
                     }
                 }
