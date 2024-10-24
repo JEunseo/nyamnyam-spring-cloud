@@ -114,6 +114,13 @@ pipeline {
                         sh '''
                         # ConfigMap 생성 및 적용
                         kubectl create configmap config-server --from-file=server/config-server/src/main/resources/application.yaml -n nyamnyam --dry-run=client -o yaml | kubectl apply -f -
+                        kubectl create configmap eureka-server --from-file=server/eureka-server/src/main/resources/application.yaml -n nyamnyam --dry-run=client -o yaml | kubectl apply -f -
+                        kubectl create configmap gateway-server --from-file=server/gateway-server/src/main/resources/application.yaml -n nyamnyam --dry-run=client -o yaml | kubectl apply -f -
+                        kubectl create configmap admin-service --from-file=service/admin-service/src/main/resources/application.yaml -n nyamnyam --dry-run=client -o yaml | kubectl apply -f -
+                        kubectl create configmap chat-service --from-file=service/chat-service/src/main/resources/application.yaml -n nyamnyam --dry-run=client -o yaml | kubectl apply -f -
+                        kubectl create configmap post-service --from-file=service/post-service/src/main/resources/application.yaml -n nyamnyam --dry-run=client -o yaml | kubectl apply -f -
+                        kubectl create configmap restaurant-service --from-file=service/restaurant-service/src/main/resources/application.yaml -n nyamnyam --dry-run=client -o yaml | kubectl apply -f -
+                        kubectl create configmap user-service --from-file=service/user-service/src/main/resources/application.yaml -n nyamnyam --dry-run=client -o yaml | kubectl apply -f -
                         '''
                     }
                 }
