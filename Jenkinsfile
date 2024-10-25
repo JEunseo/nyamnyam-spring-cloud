@@ -148,5 +148,17 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy Ingress'){
+            steps {
+                script {
+                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                        sh '''
+                        kubectl apply -f deploy/ingress/nyamnyam-api-ingress.yaml --kubeconfig=$KUBECONFIG
+                        '''
+                    }
+                }
+            }
+        }
     }
 }
