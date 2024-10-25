@@ -2,6 +2,14 @@ spring:
   application:
     name: post-service
   profiles:
+    active: local
+  config:
+    import: optional:configserver:http://localhost:8888
+---
+spring:
+  application:
+    name: post-service
+  profiles:
     active: prod
   config:
     import: optional:configserver:http://223.130.131.65:8888
