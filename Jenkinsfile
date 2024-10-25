@@ -100,7 +100,7 @@ pipeline {
                     // 각 서비스의 이미지 삭제
                     def servicesList = env.services.split(',')
                     servicesList.each { service ->
-                        def serviceName = service.split('/')[1] // 서비스 이름 추출
+                        def serviceName = service.split('/')[1] // 서비스 이름 추
                         sh "docker rmi ${DOCKER_CREDENTIALS_ID}/nyamnyam-${serviceName}:latest" // Clean up the pushed image
                     }
                 }
