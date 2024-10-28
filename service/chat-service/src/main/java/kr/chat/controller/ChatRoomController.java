@@ -1,11 +1,12 @@
 package kr.chat.controller;
 
 
-import com.amazonaws.services.kms.model.NotFoundException;
+
 import kr.chat.document.ChatRoom;
 import kr.chat.service.ChatRoomService;
 import kr.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cloud.gateway.support.NotFoundException;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -13,7 +14,6 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin("*")
 @RequestMapping("/api/chatRoom")
 public class ChatRoomController {
     private final ChatRoomService chatRoomService;

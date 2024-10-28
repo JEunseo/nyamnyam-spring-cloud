@@ -1,22 +1,17 @@
 package kr.chat.serviceImpl;
 
 
-import com.amazonaws.services.s3.AmazonS3;
 import kr.chat.document.Chat;
 import kr.chat.repository.ChatRepository;
 import kr.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 
 @Service
@@ -24,31 +19,7 @@ import java.util.UUID;
 public class ChatServiceImpl implements ChatService {
 
     private final ChatRepository chatRepository;
-    private final AmazonS3 amazonS3;
-    @Value("${naver.storage.bucket}")
-    private String bucketName;
 
-    @Value("${naver.storage.upload.path}")
-    private String uploadPath;
-
-    // 파일 업로드 메서드
-    public Mono<String> uploadFile(MultipartFile file) {
-        return Mono.fromCallable(() -> {
-            String fileName = file.getOriginalFilename();
-            String extension = fileName.substring(fileName.lastIndexOf("."));
-            String uploadName = UUID.randomUUID() + extension;
-
-            // 파일을 네이버 클라우드 스토리지에 업로드
-            try {
-                amazonS3.putObject(bucketName, uploadPath + "/" + uploadName, file.getInputStream(), null);
-            } catch (IOException e) {
-                throw new RuntimeException("파일 업로드 중 오류 발생", e);
-            }
-
-            // 업로드된 파일의 URL 반환
-            return String.format("https://%s.s3.ap-northeast-2.amazonaws.com/%s/%s", bucketName, uploadPath, uploadName);
-        }).subscribeOn(Schedulers.boundedElastic());
-    }
 
     @Override
     public Flux<Chat> mFindBySender(String sender, String chatRoomId) {
