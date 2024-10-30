@@ -65,7 +65,6 @@ services:
       timeout: 10s
       retries: 5
 
-
   admin:
     hostname: admin-service
     build:
