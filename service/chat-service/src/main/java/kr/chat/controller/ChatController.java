@@ -3,15 +3,16 @@ package kr.chat.controller;
 
 
 
+
 import kr.chat.document.Chat;
 import kr.chat.service.ChatRoomService;
 import kr.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cloud.gateway.support.NotFoundException;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+
 
 import java.time.LocalDateTime;
 
@@ -69,9 +70,9 @@ public class ChatController {
 
     @PutMapping("/{chatId}/read/{nickname}")
     public Mono<Chat> updateReadBy(@PathVariable String chatId, @PathVariable String nickname) {
-        return chatService.updateReadBy(chatId, nickname)
-                .switchIfEmpty(Mono.error(new NotFoundException("Chat not found")));  // 채팅이 없을 경우 예외 처리
+        return chatService.updateReadBy(chatId, nickname);
     }
+
 
 
 

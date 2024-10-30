@@ -37,13 +37,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Flux<User> findAll() {
-        System.out.println("findAll() method called - fetching all users from the database");
-
-        return userRepository.findAll()
-                .doOnNext(user -> System.out.println("Fetched user: " + user))
-                .doOnError(error -> System.out.println("Error occurred while fetching users: " + error));
+        return userRepository.findAll();
     }
-
 
     @Override
     public Mono<Long> count() {
@@ -69,7 +64,7 @@ public class UserServiceImpl implements UserService {
                     existingUser.setGender(user.getGender() != null ? user.getGender() : existingUser.getGender());
                     existingUser.setEnabled(user.getEnabled() != null ? user.getEnabled() : existingUser.getEnabled());
 
-                    // 썸네일 업데이트 처리
+
                     return userThumbnailService.uploadThumbnail(existingUser, thumbnails)
                             .then(userRepository.save(existingUser));
                 })
@@ -110,15 +105,39 @@ public class UserServiceImpl implements UserService {
                 );
     }
 
+    public Mono<User> saveOAuthUser(String oauthId, String username, String nickname, String name, String ageRange, String tel, String gender, String profileImage) {
+        return userRepository.findByUsername(username)
+                .flatMap(existingUser -> Mono.<User>error(new RuntimeException("Username is already taken.")))
+                .switchIfEmpty(
+                        Mono.defer(() -> {
+                            Long age = convertAgeRangeToAge(ageRange);
 
 
+                            User newUser = User.builder()
+                                    .username(username)
+                                    .nickname(nickname)
+                                    .name(name)
+                                    .age(age)
+                                    .role("USER")
+                                    .tel(tel)
+                                    .gender(gender)
+                                    .enabled(true)
+                                    .imgId(profileImage)
+                                    .score(36.5)
+                                    .build();
 
-    @Override
-    public Mono<String> authenticate(String username, String password) {
+                            return userRepository.save(newUser);
+                        })
+                );
+    }
+
+
+    private Long convertAgeRangeToAge(String ageRange) {
+        if (ageRange != null && ageRange.contains("-")) {
+            String[] parts = ageRange.split("-");
+            return Long.parseLong(parts[0]);
+        }
         return null;
-//        return userRepository.findByUsername(username)
-//                .filter(user -> new BCryptPasswordEncoder().matches(password, user.getPassword()))
-////                .flatMap(user -> tokenService.createAndSaveToken(user.getId()));
     }
 }
 

@@ -20,13 +20,6 @@ public class ChatServiceImpl implements ChatService {
 
     private final ChatRepository chatRepository;
 
-
-    @Override
-    public Flux<Chat> mFindBySender(String sender, String chatRoomId) {
-        return chatRepository.mFindBySender(sender, chatRoomId)
-                .subscribeOn(Schedulers.boundedElastic());
-    }
-
     @Override
     public Flux<Chat> mFindByChatRoomId(String chatRoomId) {
         return chatRepository.mFindByChannelId(chatRoomId)
