@@ -24,10 +24,6 @@ public interface PostService {
 
     Boolean deleteById(Long id);
 
-    List<PostModel> findAllPerPage(int page);
-
-    Long createPost(PostModel model);
-
     Long updatePost(PostModel model);
 
     List<UserPostModel> findByUserId(String userId);

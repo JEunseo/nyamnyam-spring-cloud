@@ -3,7 +3,6 @@ package kr.post.serviceImpl;
 import com.querydsl.core.Tuple;
 import jakarta.transaction.Transactional;
 import kr.post.absent.Chart.UserPostModel;
-import kr.post.absent.Pagination;
 import kr.post.component.ImageModel;
 import kr.post.component.PostModel;
 import kr.post.entity.*;
@@ -75,17 +74,6 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostModel> findAllPerPage(int page) {
-        Long totalCount = count();
-        Pagination p = new Pagination(page, totalCount.intValue());
-        return repository.findAll().stream()
-                .skip(p.getStartRow())
-                .limit(p.getEndRow() - p.getStartRow() + 1)
-                .map(this::convertToModel)
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public List<PostModel> findAllByRestaurant(Long restaurantId) {
         List<PostEntity> allByRestaurantWithNickname = repository.findAllByRestaurantWithNickname(restaurantId);
         return allByRestaurantWithNickname.stream()
@@ -140,17 +128,6 @@ public class PostServiceImpl implements PostService {
         return entity.getId();
     }
 
-    @Transactional
-    @Override
-    public Long createPost(PostModel model) {
-        PostEntity entity = convertToEntity(model);
-        entity.setEntryDate(LocalDateTime.now());
-        repository.save(entity);
-
-        saveTags(model.getTags(), entity);
-
-        return entity.getId();
-    }
     @Transactional
     @Override
     public Long updatePost(PostModel model) {
