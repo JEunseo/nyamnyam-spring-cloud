@@ -26,8 +26,6 @@ public interface PostService {
 
     List<PostModel> findAllPerPage(int page);
 
-    Boolean crawling();
-
     Long createPost(PostModel model);
 
     Long updatePost(PostModel model);
