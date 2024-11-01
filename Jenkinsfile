@@ -18,18 +18,6 @@ pipeline {
             }
         }
 
-       stage('Create Namespace') {
-            steps {
-                script {
-                    withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-                        sh '''
-                        kubectl apply -f deploy/namespace/nyamnyam-namespace.yaml --kubeconfig=$KUBECONFIG
-                        '''
-                    }
-                }
-            }
-        }
-
         stage('Git Clone') {
             steps {
                 script {
@@ -46,6 +34,18 @@ pipeline {
                 }
             }
         }
+
+        stage('Create Namespace') {
+                    steps {
+                        script {
+                            withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                                sh '''
+                                kubectl apply -f deploy/namespace/nyamnyam-namespace.yaml --kubeconfig=$KUBECONFIG
+                                '''
+                            }
+                        }
+                    }
+                }
 
         stage('Build JAR') {
             steps {
