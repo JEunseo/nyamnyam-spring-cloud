@@ -5,3 +5,11 @@ spring:
     active: prod
   config:
     import: "optional:configserver:http://nyamnyam-config-server-57c08-100108837-3fa9fa0442ab.kr.lb.naverncp.com:8888"
+
+#spring:
+#  application:
+#    name: gateway-server
+#  profiles:
+#    active: local
+#  config:
+#    import: "optional:configserver:http://localhost:8888"
