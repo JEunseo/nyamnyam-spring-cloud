@@ -37,7 +37,7 @@ public class WebSecurityConfig {
                 )
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 호출
                 .oauth2Login(oauth2Login -> oauth2Login
                         .clientRegistrationRepository(reactiveClientRegistrationRepository)
                         .authenticationSuccessHandler(serverAuthenticationSuccessHandler)
@@ -52,21 +52,20 @@ public class WebSecurityConfig {
         return http.build();
     }
 
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of(
+        corsConfiguration.setAllowedOriginPatterns(Arrays.asList(
                 "http://localhost:3000",
-                "https://abc.nyamnyam.kr",
-                "https://api.nyamnyam.kr",
-                "https://www.nyamnyam.kr",
-                "https://nyamnyam.kr",
-                "https://eunseo.nyamnyam.kr",
-                "https://www.eunseo.nyamnyam.kr"
+                "*.nyamnyam.kr",
+                "https://nyamnyam-front-vercel-eunseo-git-main-jeunseos-projects.vercel.app/",
+                "https://nyamnyam-front-vercel-eunseo-iydxxt1m2-jeunseos-projects.vercel.app/",
+                "https://nyamnyam-local-front.vercel.app"
+
         ));
-        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         corsConfiguration.setAllowedHeaders(Arrays.asList("*"));
+        corsConfiguration.setExposedHeaders(Arrays.asList("*"));
         corsConfiguration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -74,4 +73,5 @@ public class WebSecurityConfig {
         return source;
     }
 }
+
 
