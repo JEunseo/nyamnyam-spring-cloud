@@ -79,9 +79,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3' // JUnit Jupiter API
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3' // JUnit Jupiter Engine
 
-
     // selenium 라이브러리 (동적 사이트)
-    //implementation 'org.seleniumhq.selenium:selenium-java:4.1.2'
     implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.19.1'
     implementation 'org.seleniumhq.selenium:selenium-java:4.19.1'
     implementation 'org.seleniumhq.selenium:selenium-chrome-driver:4.19.1'

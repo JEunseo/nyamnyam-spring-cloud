@@ -187,7 +187,6 @@ public class CrawlServiceImpl implements CrawlService {
         } catch (NoSuchElementException | TimeoutException e) {
             System.out.println("평점 정보를 찾을 수 없어 기본값 0.0을 설정합니다.");
             return null;
-            // return 0.0; 중에 고민중
         }
     }
 
@@ -266,7 +265,6 @@ public class CrawlServiceImpl implements CrawlService {
 
                 combinedMenu.append(menuName).append("-").append(menuPrice).append(",");
             }
-
             // 마지막 ", " 제거
             if (combinedMenu.length() > 0) {
                 combinedMenu.setLength(combinedMenu.length() - 2);
