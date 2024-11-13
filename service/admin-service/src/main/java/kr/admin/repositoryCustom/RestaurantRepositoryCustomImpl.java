@@ -76,9 +76,6 @@ public class RestaurantRepositoryCustomImpl implements RestaurantRepositoryCusto
                 .collect(Collectors.toList());
     }
 
-
-
-
     // 랜덤레스토랑
     @Override
     public RestaurantEntity randomRestaurant(String userId) {
@@ -105,5 +102,4 @@ public class RestaurantRepositoryCustomImpl implements RestaurantRepositoryCusto
         return randomRestaurant;
 
     }
-
 }

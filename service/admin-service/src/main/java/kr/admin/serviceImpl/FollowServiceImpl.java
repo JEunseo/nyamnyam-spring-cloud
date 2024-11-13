@@ -64,6 +64,4 @@ public class FollowServiceImpl implements FollowService {
         return byFollowing.stream()
                 .anyMatch(entity -> entity.getFollower().equals(follower));
     }
-
-
 }

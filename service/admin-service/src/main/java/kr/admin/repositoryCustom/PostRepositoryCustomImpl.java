@@ -3,18 +3,14 @@ package kr.admin.repositoryCustom;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
 import kr.admin.absent.chart.CountModel;
 import kr.admin.absent.chart.TotalModel;
-import kr.admin.absent.chart.UserPostModel;
-import kr.admin.entity.PostEntity;
 import kr.admin.entity.QPostEntity;
 import kr.admin.entity.QRestaurantEntity;
 import kr.admin.entity.QUpvoteEntity;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -43,7 +39,6 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .collect(Collectors.toList());
     }
 
-
     // 가장 많은 추천을 받은 음식점 list
     @Override
     public List<TotalModel> findRestaurantFromUpvote() {
@@ -69,11 +64,7 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                     return totalModel;
                 })
                 .collect(Collectors.toList());
-
-
-
     }
-
 
     // 포스트가 가장 많은 음식점 list
     @Override
@@ -126,10 +117,4 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .collect(Collectors.toList());
 
     }
-
-
-
-
-
-
 }

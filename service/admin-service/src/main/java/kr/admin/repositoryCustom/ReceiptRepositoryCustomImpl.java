@@ -30,8 +30,6 @@ public class ReceiptRepositoryCustomImpl implements ReceiptRepositoryCustom{
                 .fetchFirst();
     }
 
-
-
     @Override
     public List<CostModel> costList(String userId) {
         QReceiptEntity receiptEntity = QReceiptEntity.receiptEntity;
@@ -82,8 +80,4 @@ public class ReceiptRepositoryCustomImpl implements ReceiptRepositoryCustom{
                 .collect(Collectors.toList());
 
     }
-
-
-
-
 }

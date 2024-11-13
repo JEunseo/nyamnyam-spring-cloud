@@ -39,6 +39,5 @@ public class ReportRepositoryCustomImpl implements ReportRepositoryCustom {
                     return reportCountModel;
                 })
                 .collect(Collectors.toList());
-
     }
 }
